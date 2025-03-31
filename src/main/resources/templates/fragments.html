@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Common Fragments</title>
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            /* Custom styles for colors */
+            .header-link {
+                color: blue; /* Change link color to blue */
+            }
+            .header-link:hover {
+                color: green; /* Change link color to green on hover */
+            }
+        </style>
+    </head>
+    <body>
+        <!-- My header-->
+        <header th:fragment="header">
+            <nav>
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-md-2">
+                             <!-- logo -->
+                            <img src="/assets/Logo.webp" alt="Logo" class="img-fluid"/>
+                        </div>
+                        <div class="col-md-10">
+                             <!-- Other things -->
+                            <ul class="nav">
+                                <li class="nav-item"><a class="nav-link header-link" th:href="@{/home}">Home</a></li>
+                                <li class="nav-item"><a class="nav-link header-link" th:href="@{/medicine}">Medicine</a></li>
+                                <li class="nav-item"><a class="nav-link header-link" th:href="@{/medical-instruments}">Medical instruments</a></li>
+                                <li class="nav-item"><a class="nav-link header-link" th:href="@{/about}">Who are we?</a></li>
+                                <li class="nav-item"><a class="nav-link header-link" th:href="@{/sign-up}">Sign Up</a></li>
+                            </ul>
+                        </div>
+                    </div>
+            </nav>
+        </header>
+
+        <!-- My footer -->
+        <footer th:fragment="footer">
+            <div style="background-color: #003366; color: white; padding: 20px ;">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-md-2" style="width: 59%;">
+                            <img src="/assets/Logo.webp" alt="Logo" class="img-fluid"/> <!-- Logo image  --> 
+                        </div>
+                        <div class="col-md-5">
+                            <h5>Carepoint</h5>
+                            <p>
+                                Find your medicine and medical instruments all in here! If you don't know what
+                                the doctor gave you, connect with our Volunteers to assess you!
+                            </p>
+                        </div>
+                        <div>
+                            <div class="col-md-9">
+                                <h5>Contact Us</h5>
+                                <p>
+                                <strong>Address:</strong> address example<br>
+                                <strong>Phone:</strong> 81 760 881<br>
+                                <strong>Email:</strong> example@gmail.com
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </footer>
+
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2"></script>
+    </body>
+</html>

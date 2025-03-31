@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Custom styles for colors */
+        .header-link {
+            color: blue; /* Change link color to blue */
+        }
+        .header-link:hover {
+            color: green; /* Change link color to green on hover */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 
+    <div th:insert="fragments :: header"> Header </div>
+
+     Body of the home  
+    <div class="container mt-4">
+        <div class="row">
+             Welcome section 
+            <div class="col-md-12">
+                <div>
+                    <img src="/assets/home_background.jpg" alt="home_background" class="img-fluid"/>  background image 
+                </div>
+                <div>
+                    <p>
+                        Welcome To carepoint!
+                        Here where you can find your medicine and medical instruments.
+                        Get started from here ->
+                    </p>
+                    <form th:action="@{/register}" method="get">
+                        <button type="submit" class="btn btn-primary">Register</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+         Medicine Section 
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <h3>Some Medicines</h3>
+                <div class="row">  This should be 3 cards beside each other the info retrieve from database
+                    <div class="col-md-4">
+                        <div class="card">
+                            <img src="" alt="" class="card-img-top">  import from database 
+                            <div class="card-body">
+                                <h4 class="card-title">Title</h4>  Name of the medicine 
+                                <p class="card-text">description</p>  Description of the medicine 
+                                <p>Owner:</p>  The owner of the medicine
+                            </div>
+                        </div>
+                    </div>
+                     Repeat similar card structure for other medicines 
+                </div>
+            </div>
+        </div>
+
+         Medical Instruments Section
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <h3>Some Medical Instruments</h3>
+                <div class="row">  This should be 3 cards beside each other the info retrieve from database
+                    <div class="col-md-4">
+                        <div class="card">
+                            <img src="" alt="" class="card-img-top">  import from database 
+                            <div class="card-body">
+                                <h4 class="card-title">Title</h4>  Name of the medical instrument 
+                                <p class="card-text">description</p>  Description of the medical instrument 
+                                <p>Owner:</p>  The owner of the medical instrument
+                            </div>
+                        </div>
+                    </div>
+                     Repeat similar card structure for other medical instruments 
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:insert="fragments :: footer"> Footer </div
+    </div
+
+     Bootstrap JS and dependencies 
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2
+-->
+</body>
+</html>
