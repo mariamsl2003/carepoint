@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home Page</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!--
     <style>
         /* Custom styles for colors */
         .header-link {
@@ -15,6 +16,7 @@
             color: green; /* Change link color to green on hover */
         }
     </style>
+-->
 </head>
 <body>
 
@@ -41,49 +43,46 @@
                 </div>
             </div>
         </div>
-        
-         Medicine Section 
+    -->
+         <!-- Medicine Section -->
         <div class="row mt-4">
-            <div class="col-md-12">
+            <div class="col-md-12" th:each="medicine : ${medicines}">
                 <h3>Some Medicines</h3>
-                <div class="row">  This should be 3 cards beside each other the info retrieve from database
+                <div class="row">  <!-- This should be 3 cards beside each other the info retrieve from database -->
                     <div class="col-md-4">
                         <div class="card">
-                            <img src="" alt="" class="card-img-top">  import from database 
+                            <img src="@{${medicine.imagePath}}" alt="medicine image" class="card-img-top">  <!-- import from database -->
                             <div class="card-body">
-                                <h4 class="card-title">Title</h4>  Name of the medicine 
-                                <p class="card-text">description</p>  Description of the medicine 
-                                <p>Owner:</p>  The owner of the medicine
+                                <h4 class="card-title" th:text="${medicine.name}"></h4>  <!-- Name of the medicine --> 
+                                <p class="card-text" th:txt="${medicine.description}"></p>  <!-- Description of the medicine -->
+                                <p><strong>Owner:</strong></p><p th:text="${medicine.member.username}"></p>
                             </div>
                         </div>
                     </div>
-                     Repeat similar card structure for other medicines 
                 </div>
             </div>
         </div>
 
-         Medical Instruments Section
+        <!-- Medical Instruments Section -->
         <div class="row mt-4">
-            <div class="col-md-12">
+            <div class="col-md-12" th:each="medical : ${medicals}">
                 <h3>Some Medical Instruments</h3>
-                <div class="row">  This should be 3 cards beside each other the info retrieve from database
+                <div class="row">  <!-- This should be 3 cards beside each other the info retrieve from database -->
                     <div class="col-md-4">
                         <div class="card">
-                            <img src="" alt="" class="card-img-top">  import from database 
+                            <img src="@{${medical.imagePath}}" alt="medical instrument image" class="card-img-top">  <!-- import from database --> 
                             <div class="card-body">
-                                <h4 class="card-title">Title</h4>  Name of the medical instrument 
-                                <p class="card-text">description</p>  Description of the medical instrument 
-                                <p>Owner:</p>  The owner of the medical instrument
+                                <h4 class="card-title" th:text="${medical.name}"></h4>  <!-- Name of the medical instrument -->
+                                <p class="card-text" th:text="${medical.description}"></p>  <!-- Description of the medical instrument -->
+                                <p><strong>Owner:</strong></p><p th:text="${medical.member.username}"></p>
                             </div>
                         </div>
                     </div>
-                     Repeat similar card structure for other medical instruments 
                 </div>
             </div>
         </div>
     </div>
-    <div th:insert="fragments :: footer"> Footer </div
-    </div
+    <div th:insert="fragments :: footer"> <!-- Footer --> </div>
 
      Bootstrap JS and dependencies 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

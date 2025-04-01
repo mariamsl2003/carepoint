@@ -23,4 +23,7 @@ public interface MedicineRepository extends JpaRepository<MedicineModel, UUID> {
     @Query(value = "select * from medicine where name = ?1", nativeQuery = true)
     Optional<List<MedicineModel>> findByName(String name);
 
+    @Query(value = "select * from medicine order by random() limit 3", nativeQuery = true)
+    List<MedicineModel> findThreeRandomMedicine();
+
 }

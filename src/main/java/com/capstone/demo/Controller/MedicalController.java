@@ -13,50 +13,51 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.capstone.demo.Model.MedicineModel;
+import com.capstone.demo.Model.MedicalModel;
 import com.capstone.demo.Model.MemberModel;
 import com.capstone.demo.Repository.MemberRepository;
-import com.capstone.demo.Service.MedicineService;
+import com.capstone.demo.Service.MedicalService;
 
 import org.springframework.ui.Model;
 
 @Controller
-@RequestMapping("/medicine")
-public class MedicineController {
+@RequestMapping("/medical")
+public class MedicalController {
 
     @Autowired
-    private MedicineService medicineService;
+    private MedicalService medicalService;
 
     @Autowired
     private MemberRepository memberRepository;
 
-    // create medicine (test when finish the profile)
+    // create medical (test when finish the profile)
     @GetMapping("/add")
-    public String addMedicine() {
-        return "addMedicine";
+    public String addMedcal() {
+        return "addMedical";
     }
 
     @PostMapping("/add")
-    public String addMedicine(@RequestParam("name") String name, @RequestParam("description") String description,
+    public String addMedical(@RequestParam("name") String name, @RequestParam("description") String description,
             @RequestParam("member_id") UUID id) {
         MemberModel member = memberRepository.findMemberById(id);
-        medicineService.createMedicine(name, description, member);
-        return "addMedicine";
+        medicalService.createMedical(name, description, member);
+        return "addMedical";
     }
 
-    // get all the medicine (will be tested)
-    @GetMapping("/medicines")
-    public String getAllMedicine(Model model) {
-        Optional<List<MedicineModel>> medicines = medicineService.getMedicineAccepted();
-        model.addAttribute("medicines", medicines);
-        return "medicine";
+    // get all the medical (will be tested)
+    // we get the accepted one since it is accepted
+    @GetMapping("/medicals")
+    public String getAllMedical(Model model) {
+        Optional<List<MedicalModel>> medical = medicalService.getMedicalAccepted();
+        model.addAttribute("medicals", medical);
+        return "medical";
     }
 
     // upload the image/update it
-    @PostMapping("/medicineimg")
+    @PostMapping("/medicalimg")
     public String uploadImage(@RequestParam("image") MultipartFile image, @RequestParam("id") UUID id) {
         try {
-            medicineService.uploadImage(image, id);
+            medicalService.uploadImage(image, id);
             return "image successfully uploaded";
         } catch (Exception e) {
             return "errir uploading the image:" + e.getMessage();
@@ -64,14 +65,14 @@ public class MedicineController {
     }
 
     // get the medicine by the name and return to medicine
-    @GetMapping("/medicines/search")
-    public String getMedicines(Model model, @RequestParam("name") String name) {
-        Optional<List<MedicineModel>> medicines = medicineService.findMedicineByName(name);
-        if (medicines.isPresent()) {
-            model.addAttribute("medicines", medicines);
-            return "medicine";
+    @GetMapping("/medicals/search")
+    public String getMedicals(Model model, @RequestParam("name") String name) {
+        Optional<List<MedicalModel>> medicals = medicalService.findMedicalByName(name);
+        if (medicals.isPresent()) {
+            model.addAttribute("medicals", medicals);
+            return "medical";
         } else {
-            return "no medicine found";
+            return "no medical instrument found";
         }
     }
 

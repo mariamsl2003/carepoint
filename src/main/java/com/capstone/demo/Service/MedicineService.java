@@ -65,4 +65,8 @@ public class MedicineService {
         return medicineRepository.findByName(name);
     }
 
+    // returning three random medicine
+    public List<MedicineModel> getThreeRandomMedicine() {
+        return medicineRepository.findThreeRandomMedicine();
+    }
 }
