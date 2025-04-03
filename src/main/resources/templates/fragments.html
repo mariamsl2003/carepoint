@@ -1,19 +1,11 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Common Fragments</title>
         <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-        <style>
-            /* Custom styles for colors */
-            .header-link {
-                color: blue; /* Change link color to blue */
-            }
-            .header-link:hover {
-                color: green; /* Change link color to green on hover */
-            }
-        </style>
+    
     </head>
     <body>
         <!-- My header-->
@@ -28,12 +20,27 @@
                         <div class="col-md-10">
                              <!-- Other things -->
                             <ul class="nav">
-                                <li class="nav-item"><a class="nav-link header-link" th:href="@{/home}">Home</a></li>
-                                <li class="nav-item"><a class="nav-link header-link" th:href="@{/medicine}">Medicine</a></li>
-                                <li class="nav-item"><a class="nav-link header-link" th:href="@{/medical}">Medical instruments</a></li>
-                                <li class="nav-item"><a class="nav-link header-link" th:href="@{/about}">Who are we?</a></li>
-                                <li class="nav-item"><a class="nav-link header-link" th:href="@{/sign-up}">Sign Up</a></li>
+                                <li class="nav-item"><a style="color: blue;" th:href="@{/home}">Home</a></li>
+                                <li class="nav-item"><a style="color: blue;" th:href="@{/medicine}">Medicine</a></li>
+                                <li class="nav-item"><a style="color: blue;" th:href="@{/medical}">Medical instruments</a></li>
+                                <li class="nav-item"><a style="color: blue;" th:href="@{/about}">Who are we?</a></li>  
                             </ul>
+                            <div th:if="${user = null}">
+                                <a style="color: blue;" th:href="@{/sign-up}">Sign Up</a>
+                            </div>
+                            <div th:if="${user != null}">
+                                <div>
+                                    <img src="@{${user.imagePath != null} ? ${user.imagePath} : @{/assets/account.png}}" alt="profile image" style="width: 40px; height: 40px; border-radius: 50%;">
+                                    <div style="display: block;">
+                                        <a style="color: blue;" th:href="@{/profile}">Profile</a>
+                                        <a style="color: blue;" th:href="@{/my-reuest}">my request</a>
+                                        <div th:if="${user.volunteer == DOCVOLUNTEER || user.volunteer == PHVOLUNTEER}">
+                                            <a style="color: blue;" th:href="@{/request-validation}">request-validation</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
             </nav>

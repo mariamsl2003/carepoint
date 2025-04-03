@@ -15,8 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.capstone.demo.Model.MedicineModel;
 import com.capstone.demo.Model.MemberModel;
-import com.capstone.demo.Repository.MemberRepository;
 import com.capstone.demo.Service.MedicineService;
+import com.capstone.demo.Service.MemberService;
 
 import org.springframework.ui.Model;
 
@@ -28,7 +28,7 @@ public class MedicineController {
     private MedicineService medicineService;
 
     @Autowired
-    private MemberRepository memberRepository;
+    private MemberService memberService;
 
     // create medicine (test when finish the profile)
     @GetMapping("/add")
@@ -39,7 +39,7 @@ public class MedicineController {
     @PostMapping("/add")
     public String addMedicine(@RequestParam("name") String name, @RequestParam("description") String description,
             @RequestParam("member_id") UUID id) {
-        MemberModel member = memberRepository.findMemberById(id);
+        MemberModel member = memberService.findById(id);
         medicineService.createMedicine(name, description, member);
         return "addMedicine";
     }
@@ -59,7 +59,7 @@ public class MedicineController {
             medicineService.uploadImage(image, id);
             return "image successfully uploaded";
         } catch (Exception e) {
-            return "errir uploading the image:" + e.getMessage();
+            return "error uploading the image:" + e.getMessage();
         }
     }
 

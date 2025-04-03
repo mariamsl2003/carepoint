@@ -15,8 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.capstone.demo.Model.MedicalModel;
 import com.capstone.demo.Model.MemberModel;
-import com.capstone.demo.Repository.MemberRepository;
 import com.capstone.demo.Service.MedicalService;
+import com.capstone.demo.Service.MemberService;
 
 import org.springframework.ui.Model;
 
@@ -28,7 +28,7 @@ public class MedicalController {
     private MedicalService medicalService;
 
     @Autowired
-    private MemberRepository memberRepository;
+    private MemberService memberService;
 
     // create medical (test when finish the profile)
     @GetMapping("/add")
@@ -39,7 +39,7 @@ public class MedicalController {
     @PostMapping("/add")
     public String addMedical(@RequestParam("name") String name, @RequestParam("description") String description,
             @RequestParam("member_id") UUID id) {
-        MemberModel member = memberRepository.findMemberById(id);
+        MemberModel member = memberService.findById(id);
         medicalService.createMedical(name, description, member);
         return "addMedical";
     }

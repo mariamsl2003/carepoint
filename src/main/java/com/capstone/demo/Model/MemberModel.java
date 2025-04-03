@@ -31,6 +31,7 @@ public class MemberModel {
     private String username;
     private String password;
     private long phoneNumber;
+    private String imagePath;
 
     @Enumerated(EnumType.STRING)
     private Volunteering volunteer;
@@ -38,8 +39,8 @@ public class MemberModel {
     @OneToMany(mappedBy = "member")
     private List<MedicineModel> medicines;
 
-    // medical list
-    // image profile after welaya replied
+    @OneToMany(mappedBy = "member")
+    private List<MedicalModel> medicals;
 
     public MemberModel(String username, String password, long phoneNumber, Volunteering volunteer) {
         this.username = username;

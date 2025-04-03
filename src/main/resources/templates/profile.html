@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Medicine Page</title>
+    </head>
+    <body>
+        <!-- Header -->
+         <!-- <div th:insert="fragments :: header"></div> -->
+        
+        <!-- main content -->
+         <div>
+            <div> <!-- this should be on the right-->
+                <img src="@{${user.imagePath != null} ? ${user.imagePath} : @{/assets/account.png}}" alt="profile image">
+                <div> <!-- this should be on the right under the image and th a tag beside each other -->
+                    <a th:href="@{/edit}">Edit profile</a>
+                    <a th:href="@{/logout}">Log out</a>
+                </div>
+            </div>
+            
+            <div> <!-- this should be in the middle -->
+                <h2 th:text="${user.username}"></h2>
+                <p>
+                    phone number <span th:text="${user.phoneNumber}"></span>
+                </p>
+                <p>
+                    You are a <span th:text="${user.volunteer}"></span>
+                </p>
+                <a th:href="@{/new-request}">new request</a>
+            </div>
+
+            <div> <!-- this should be in the left side-->
+                <div>
+                    <p>Are you a doctor? Do you want to volunteer with us and help other?</p>
+                    <a th:href="@{/doctor-request}">Request to become a doctor volunteer</a>
+                </div>
+                <div>
+                    <p>Areyou a physiotherapist? Do you want to volunteer with us and help other?</p>
+                    <a th:href="@{/ph-request}">Request to become a physiotherapist volunteer</a>
+                </div>
+            </div>
+         </div>
+
+        <!-- Footer -->
+        <div th:insert="fragments :: footer"></div>
+    </body>
+
+</html>
