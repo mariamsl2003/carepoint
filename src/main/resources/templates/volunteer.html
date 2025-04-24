@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Medicine Page</title>
+    </head>
+    <body>
+        <!-- Header -->
+         <!-- <div th:insert="fragments :: header"></div> -->
+        
+        <!-- main content -->
+        <div>
+            <form action="/volunteer" method="post">
+                <input type="hidden" id="username" value="${member.username}">
+                <label for="certificant_date">Certificant Date</label>
+                <input type="text" id="cer_date" name="certificant_date" required>
+                <label for="syndicate_id">Syndicate Id</label>
+                <input type="text" id="sy_id" name="syndicate_id" required>
+
+                <button type="submit">request</button>
+            </form>
+        </div>
+        <!-- Footer -->
+        <div th:insert="fragments :: footer"></div>
+    </body>
+
+</html>

@@ -107,4 +107,18 @@ public class HomeController {
             return "error uploading the image:" + e.getMessage();
         }
     }
+
+    // navigating to volunteer request page to request to be a volunteer
+    @GetMapping("/volunteering")
+    public String volunteering(@RequestParam("member_id") UUID id, Model model) {
+        MemberModel member = memberService.findById(id);
+        model.addAttribute("member", member);
+        return "volunteer";
+    }
+
+    @PostMapping("/volunteer")
+    public String volunteer() {
+        // make logic to send the form to the admin when admin side time comes
+        return "redirect:/profile";
+    }
 }

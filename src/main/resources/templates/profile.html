@@ -53,7 +53,7 @@
                     <div> <!-- this should be in the left side-->
                         <div>
                             <p>Are you a pharmacist? Do you want to volunteer with us and help other?</p>
-                            <a th:href="@{/doctor-request}">Request to become a volunteer</a>
+                            <a th:href="@{/volunteering}">Request to become a volunteer</a>
                         </div>
                     </div>
                 </div>
@@ -63,7 +63,9 @@
                         <img src="@{/assets/account.png}" alt="profile image">
                         <div> <!-- this should be on the right under the image and th a tag beside each other -->
                          <button onclick="location.href='@{/profile}?edit=true'">Edit Profile</button>
-                         <a th:href="@{/logout}">Log out</a>
+                         <form action="/logout" method="post">
+                            <button type="submit">logout</button>
+                        </form>
                         </div>
                     </div>
             
@@ -81,7 +83,7 @@
                     <div> <!-- this should be in the left side-->
                         <div>
                             <p>Are you a pharamicst? Do you want to volunteer with us and help other?</p>
-                            <a th:href="@{/doctor-request}">Request to become a volunteer</a>
+                            <a th:href="@{/volunteering}">Request to become a volunteer</a>
                         </div>
                     </div>
                 </div>
