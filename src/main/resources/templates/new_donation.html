@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Medicine Page</title>
+    </head>
+    <body>
+        <!-- Header -->
+         <!-- <div th:insert="fragments :: header"></div> -->
+        
+        <!-- main content -->
+         <div>
+            <form action="/new-donation" method="post">
+
+                <input type="hidden" name="member_id" value="${id}">
+
+                <label for="type">Type</label>
+                <select name="type">
+                    <option value="medicine">Medicine</option>
+                    <option value="medical-supplies">Medical Supplies</option>
+                </select>
+
+                <label for="image">Upload Photo</label>
+                <input type="file" id="image" name="image" accept="image/*" required>
+
+                <label for="name">Name</label>
+                <input id="name" name="name" required>
+
+                <label for="description">Description</label>
+                <input id="description" name="description" required>
+
+                <button type="submit">Submit</button>
+
+            </form>
+
+         </div>
+
+        <!-- Footer -->
+        <div th:insert="fragments :: footer"></div>
+    </body>
+
+</html>

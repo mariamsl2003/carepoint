@@ -22,8 +22,10 @@ public class MedicalService {
     private MedicalRepository medicalRepository;
 
     // create new medical (test it when finsih the profile)
-    public MedicalModel createMedical(String name, String description, MemberModel member) {
+    public MedicalModel createMedical(String name, String description, MemberModel member, MultipartFile image)
+            throws IOException {
         MedicalModel medical = new MedicalModel(name, description, member);
+        uploadImage(image, medical);
         medical = medicalRepository.save(medical);
         return medical;
     }
@@ -49,15 +51,12 @@ public class MedicalService {
     }
 
     // uploading the image + updating the medical (test later)
-    public void uploadImage(MultipartFile file, UUID id) throws RuntimeException, IOException {
-        MedicalModel medical = medicalRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Medical instrument not found"));
-
+    public MedicalModel uploadImage(MultipartFile file, MedicalModel medical) throws IOException {
         String filePath = uploadDir + file.getOriginalFilename();
         file.transferTo(new File(filePath));
 
         medical.setImagePath(filePath);
-        medicalRepository.save(medical);
+        return medical;
     }
 
     // finding the medical by it's name

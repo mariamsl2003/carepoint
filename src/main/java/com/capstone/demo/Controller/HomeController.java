@@ -1,5 +1,6 @@
 package com.capstone.demo.Controller;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -119,6 +120,31 @@ public class HomeController {
     @PostMapping("/volunteer")
     public String volunteer() {
         // make logic to send the form to the admin when admin side time comes
+        return "redirect:/profile";
+    }
+
+    // navigating to the adding new donation form
+    @GetMapping("/donation")
+    public String addNewDonation(@RequestParam("member_id") UUID id, Model model) {
+        model.addAttribute("id", id);
+        return "new_donation";
+    }
+
+    @PostMapping("/new-donation")
+    public String addDonation(@RequestParam("member_id") UUID id, @RequestParam("type") String type,
+            @RequestParam("name") String name, @RequestParam("description") String description,
+            @RequestParam("image") MultipartFile image) throws IOException {
+        MemberModel member = memberService.findById(id);
+        switch (type) {
+            case "medicine":
+                medicineService.createMedicine(name, description, member, image);
+                break;
+
+            case "medical-supplies":
+                medicalService.createMedical(name, description, member, image);
+                break;
+        }
+
         return "redirect:/profile";
     }
 }

@@ -22,8 +22,10 @@ public class MedicineService {
     private MedicineRepository medicineRepository;
 
     // create new medicine (test it when finsih the profile)
-    public MedicineModel createMedicine(String name, String description, MemberModel member) {
+    public MedicineModel createMedicine(String name, String description, MemberModel member, MultipartFile image)
+            throws IOException {
         MedicineModel medicine = new MedicineModel(name, description, member);
+        medicine = uploadImage(image, medicine);
         medicine = medicineRepository.save(medicine);
         return medicine;
     }
@@ -49,15 +51,12 @@ public class MedicineService {
     }
 
     // uploading the image + updating the medicine (test later)
-    public void uploadImage(MultipartFile file, UUID id) throws RuntimeException, IOException {
-        MedicineModel medicine = medicineRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Medicine not found"));
-
+    public MedicineModel uploadImage(MultipartFile file, MedicineModel medicine) throws IOException {
         String filePath = uploadDir + file.getOriginalFilename();
         file.transferTo(new File(filePath));
 
         medicine.setImagePath(filePath);
-        medicineRepository.save(medicine);
+        return medicine;
     }
 
     // finding the medicine by it's name

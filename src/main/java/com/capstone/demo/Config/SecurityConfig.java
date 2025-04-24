@@ -16,8 +16,10 @@ public class SecurityConfig {
         http.csrf().disable() // Disable CSRF protection if not needed
                 .authorizeHttpRequests(auth -> {
                     // Allow access to these endpoints without authentication
-                    auth.requestMatchers("/home", "/about", "/medicine", "/medicine/add", "/medicine/medicines",
-                            "/medicine/medicineimg", "/medicine/medicines/search").permitAll();
+                    auth.requestMatchers("/home", "/about", "medical", "/medicine", "/profile", "/profile/edit",
+                            "/memberimg", "/volunteering", "/volunteer", "/donation", "/new-donation",
+                            "/medical/medicals", "/medical/medicals/search", "/medicine/medicines",
+                            "/medicine/medicines/search").permitAll();
 
                     auth.requestMatchers("/login").permitAll();
                     // Allow all other requests without authentication
