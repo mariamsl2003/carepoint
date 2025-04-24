@@ -53,4 +53,14 @@ public class MemberService {
         member.setImagePath(filePath);
         memberRepository.save(member);
     }
+
+    // updating the member
+    public MemberModel updateMember(UUID id, String username, long phoneNumber, String password) {
+        MemberModel member = memberRepository.findMemberById(id);
+        member.setPassword(password);
+        member.setPhoneNumber(phoneNumber);
+        member.setUsername(username);
+        memberRepository.save(member);
+        return member;
+    }
 }

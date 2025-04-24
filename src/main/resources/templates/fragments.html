@@ -34,7 +34,7 @@
                                     <div style="display: block;">
                                         <a style="color: blue;" th:href="@{/profile}">Profile</a>
                                         <a style="color: blue;" th:href="@{/my-reuest}">my request</a>
-                                        <div th:if="${user.volunteer == DOCVOLUNTEER || user.volunteer == PHVOLUNTEER}">
+                                        <div th:if="${user.volunteer == PHARMACIST}">
                                             <a style="color: blue;" th:href="@{/request-validation}">request-validation</a>
                                         </div>
                                     </div>

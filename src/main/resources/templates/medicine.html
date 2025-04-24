@@ -23,18 +23,33 @@
         
         <!-- Medicine cards -->
         <div class="row">
-            <div class="col-md-4" th:each="medicine : ${medicines}">
-                <div class="card mb-4">
-                    <!-- The medicine image -->
-                    <img class="card-img-top" src="@{${medicine.imagePath}}" alt="medicine image">
-                    <div class="card-body">
-                        <!-- The medicine info -->
-                        <h5 class="card-title" th:text="${medicine.name}"></h5>
-                        <p class="card-text" th:text="${medicine.description}"></p>
-                        <p class="card-text"><small class="text-muted" th:text="${medicine.member.username}"></small></p>
+            <div th:if="${medicines} != null">
+                <div class="col-md-4" th:each="medicine : ${medicines}">
+                    <div class="card mb-4">
+                        <!-- The medicine image -->
+                        <img class="card-img-top" src="@{${medicine.imagePath}}" alt="medicine image">
+                        <div class="card-body">
+                            <!-- The medicine info -->
+                            <h5 class="card-title" th:text="${medicine.name}"></h5>
+                            <p class="card-text" th:text="${medicine.description}"></p>
+                            <p class="card-text"><small class="text-muted" th:text="${medicine.member.username}"></small></p>
+                        </div>
                     </div>
                 </div>
             </div>
+            <div th:if="${medicines } == null">
+                <div class="col-md-12">
+                    <div class="card mb-4">
+                        <img src="/assets/default_medicine.jpg" alt="default_medicine" class="card-img-top">
+                        <div class="card-body">
+                            <h5 class="card-title">Default Medicine</h5>
+                            <p class="card-text">No medicine found</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
         </div>
     </div>
 

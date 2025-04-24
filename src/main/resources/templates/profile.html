@@ -11,35 +11,81 @@
         
         <!-- main content -->
          <div>
-            <div> <!-- this should be on the right-->
-                <img src="@{${user.imagePath != null} ? ${user.imagePath} : @{/assets/account.png}}" alt="profile image">
-                <div> <!-- this should be on the right under the image and th a tag beside each other -->
-                    <a th:href="@{/edit}">Edit profile</a>
-                    <a th:href="@{/logout}">Log out</a>
+            <div th:if="${isEditting}">
+                <form action="@{/profile/edit}" method="post">
+                    <input type="hidden" th:name="id" th:value="${user.id}" />
+                    <label th:name="username">Uername:</label>
+                    <input type="text" th:name="username" th:value="${user.username}" required />
+                    <br />
+                    <label>Password:</label>
+                    <input type="password" th:name="password" th:value="${user.password}" required />
+                    <br />
+                    <label>Phone Number:</label>
+                    <input type="text" th:name="phoneNumber" th:value="${user.phoneNumber}" required />
+                    <br />
+                    <button type="submit">Save</button>
+                    <a href="@{/profile}">Cancel</a>
+                </form>
+            </div>
+            <div th:if="${isEditting}">
+                <div th:if="${user} != null">
+                    <div><!-- this should be on the right-->
+                        <img src="@{${user.imagePath != null} ? ${user.imagePath} : @{/assets/account.png}}" alt="profile image">
+                        <div> <!-- this should be on the right under the image and th a tag beside each other -->
+                            <button onclick="location.href='@{/profile}?edit=true'">Edit Profile</button>
+                            <a th:href="@{/logout}">Log out</a>
+                        </div>
+                    </div>
+            
+                    <div> <!-- this should be in the middle -->
+                        <h2 th:text="${user.username}"></h2>
+                        <p>
+                            phone number <span th:text="${user.phoneNumber}"></span>
+                        </p>
+                        <p>
+                            You are a <span th:text="${user.volunteer}"></span>
+                        </p>
+                        <a th:href="@{/new-request}">new request</a>
+                    </div>
+
+                    <div> <!-- this should be in the left side-->
+                        <div>
+                            <p>Are you a pharmacist? Do you want to volunteer with us and help other?</p>
+                            <a th:href="@{/doctor-request}">Request to become a volunteer</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div th:if="${user} == null">
+                    <div><!-- this should be on the right-->
+                        <img src="@{/assets/account.png}" alt="profile image">
+                        <div> <!-- this should be on the right under the image and th a tag beside each other -->
+                         <button onclick="location.href='@{/profile}?edit=true'">Edit Profile</button>
+                         <a th:href="@{/logout}">Log out</a>
+                        </div>
+                    </div>
+            
+                    <div> <!-- this should be in the middle -->
+                        <h2>Here the user's username</h2>
+                        <p>
+                            phone number <span> here the user's phone number</span>
+                        </p>
+                        <p>
+                            You are a <span> here if the user is regular member or a volunteer</span>
+                        </p>
+                        <a th:href="@{/new-request}">new request</a>
+                    </div>
+
+                    <div> <!-- this should be in the left side-->
+                        <div>
+                            <p>Are you a pharamicst? Do you want to volunteer with us and help other?</p>
+                            <a th:href="@{/doctor-request}">Request to become a volunteer</a>
+                        </div>
+                    </div>
                 </div>
             </div>
             
-            <div> <!-- this should be in the middle -->
-                <h2 th:text="${user.username}"></h2>
-                <p>
-                    phone number <span th:text="${user.phoneNumber}"></span>
-                </p>
-                <p>
-                    You are a <span th:text="${user.volunteer}"></span>
-                </p>
-                <a th:href="@{/new-request}">new request</a>
-            </div>
-
-            <div> <!-- this should be in the left side-->
-                <div>
-                    <p>Are you a doctor? Do you want to volunteer with us and help other?</p>
-                    <a th:href="@{/doctor-request}">Request to become a doctor volunteer</a>
-                </div>
-                <div>
-                    <p>Areyou a physiotherapist? Do you want to volunteer with us and help other?</p>
-                    <a th:href="@{/ph-request}">Request to become a physiotherapist volunteer</a>
-                </div>
-            </div>
+            
          </div>
 
         <!-- Footer -->

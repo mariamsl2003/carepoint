@@ -66,11 +66,21 @@ public class HomeController {
 
     // navigating to profile page
     @GetMapping("/profile")
-    public String profile(@RequestParam("member_id") UUID id, Model model) {
+    public String profile(@RequestParam("member_id") UUID id, @RequestParam(required = false) Boolean edit,
+            Model model) {
         MemberModel member = memberService.findById(id);
         model.addAttribute("user", member);
         authenticate(model);
+        model.addAttribute("isEditting", edit != null && edit);
         return "profile";
+    }
+
+    // profile editting mode
+    @PostMapping("/profile/edit")
+    public String editProfile(@RequestParam("member_id") UUID id, @RequestParam String username,
+            @RequestParam String password, @RequestParam long phoneNumber) {
+        memberService.updateMember(id, username, phoneNumber, password);
+        return "redirect:/profile?member_id=" + id;
     }
 
     // user authentication
