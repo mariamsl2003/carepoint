@@ -33,7 +33,9 @@
                         <img src="@{${user.imagePath != null} ? ${user.imagePath} : @{/assets/account.png}}" alt="profile image">
                         <div> <!-- this should be on the right under the image and th a tag beside each other -->
                             <button onclick="location.href='@{/profile}?edit=true'">Edit Profile</button>
-                            <a th:href="@{/logout}">Log out</a>
+                            <form action="/logout" method="post">
+                                <button type="submit">logout</button>
+                            </form>
                         </div>
                     </div>
             

@@ -24,9 +24,14 @@ public class SecurityConfig {
                     auth.anyRequest().permitAll();
                 })
                 .formLogin(form -> form
-                        .defaultSuccessUrl("/", true) // Redirect users to home page after login
+                        .defaultSuccessUrl("/home", true) // Redirect users to home page after login
                         .permitAll() // Allow all users to access the login page
-                );
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/home?logout")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID"));
 
         return http.build();
     }

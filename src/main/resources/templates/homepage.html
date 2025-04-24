@@ -48,6 +48,9 @@
         <div class="row mt-4">
             <div class="col-md-12" th:if="${medicines} != null">
                 <div class="col-md-12" th:each="medicine : ${medicines}">
+                    <div th:if="${param.logout}">
+                        <p>you have logout successfully</p>
+                    </div>
                     <h3>Some Medicines</h3>
                     <div class="row">  <!-- This should be 3 cards beside each other the info retrieve from database -->
                         <div class="col-md-4">
