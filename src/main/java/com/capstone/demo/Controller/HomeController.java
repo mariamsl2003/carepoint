@@ -2,6 +2,7 @@ package com.capstone.demo.Controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -146,5 +147,45 @@ public class HomeController {
         }
 
         return "redirect:/profile";
+    }
+
+    // go to my_request page:
+    @GetMapping("/myrequest")
+    public String myRequest(@RequestParam("member_id") UUID id, Model model) {
+        MemberModel member = memberService.findById(id);
+        List<MedicineModel> medicines = medicineService.getRequestedMedicine(member);
+        List<MedicalModel> medicals = medicalService.getRequestedMedical(member);
+        model.addAttribute("medicals", medicals);
+        model.addAttribute("medicines", medicines);
+        return "my_request";
+    }
+
+    // search for both medicine and medical
+    @GetMapping("/search")
+    public String search(Model model, @RequestParam("name") String name) {
+        if (medicalService.findMedicalByName(name).isPresent()) {
+            Optional<List<MedicalModel>> medical = medicalService.findMedicalByName(name);
+            model.addAttribute("med", medical);
+        } else {
+            Optional<List<MedicineModel>> medicine = medicineService.findMedicineByName(name);
+            model.addAttribute("med", medicine);
+        }
+        return "redirect:/my_request";
+    }
+
+    @GetMapping("/mymedical")
+    public String myMedical(Model model, @RequestParam("member_id") UUID id) {
+        MemberModel member = memberService.findById(id);
+        List<MedicalModel> medicals = medicalService.getRequestedMedical(member);
+        model.addAttribute("medicals", medicals);
+        return "redirect:/my_request";
+    }
+
+    @GetMapping("/mymedicine")
+    public String myMedicine(Model model, @RequestParam("member_id") UUID id) {
+        MemberModel member = memberService.findById(id);
+        List<MedicineModel> medicines = medicineService.getRequestedMedicine(member);
+        model.addAttribute("medicines", medicines);
+        return "redirect:/my_request";
     }
 }

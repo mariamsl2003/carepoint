@@ -2,6 +2,7 @@ package com.capstone.demo.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -67,5 +68,19 @@ public class MedicineService {
     // returning three random medicine
     public List<MedicineModel> getThreeRandomMedicine() {
         return medicineRepository.findThreeRandomMedicine();
+    }
+
+    // get the medicine who is requested by the member
+    public List<MedicineModel> getRequestedMedicine(MemberModel curentMember) {
+        List<MedicineModel> medicines = medicineRepository.findMedicinesByRequested();
+        List<MedicineModel> medicinesRequested = new ArrayList<>();
+        int i = 0;
+        while (i <= medicines.size()) {
+            if (medicines.get(i).getMemberToGet() == curentMember) {
+                medicinesRequested.add(medicines.get(i));
+            }
+            i++;
+        }
+        return medicinesRequested;
     }
 }
