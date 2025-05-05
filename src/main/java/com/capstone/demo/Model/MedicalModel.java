@@ -17,6 +17,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 
 @Getter
 @Setter
@@ -25,11 +26,75 @@ import lombok.Setter;
 @Table(name = "medical")
 public class MedicalModel {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String name;
     private String description;
     private String imagePath;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
+    public RequestResult getRequestResult() {
+        return requestResult;
+    }
+
+    public void setRequestResult(RequestResult requestResult) {
+        this.requestResult = requestResult;
+    }
+
+    public RequestToGet getRequested() {
+        return requested;
+    }
+
+    public void setRequested(RequestToGet requested) {
+        this.requested = requested;
+    }
+
+    public MemberModel getMemberToGet() {
+        return memberToGet;
+    }
+
+    public void setMemberToGet(MemberModel memberToGet) {
+        this.memberToGet = memberToGet;
+    }
+
+    public MemberModel getMember() {
+        return member;
+    }
+
+    public void setMember(MemberModel member) {
+        this.member = member;
+    }
 
     // this is for accepting/rejecting to donate an item
     @Enumerated(EnumType.STRING)
@@ -40,6 +105,8 @@ public class MedicalModel {
     private RequestToGet requested;
 
     // this is the member who requested it
+    @ManyToOne
+    @JoinColumn(name = "member_to_get_id")
     private MemberModel memberToGet;
 
     @ManyToOne

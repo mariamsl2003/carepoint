@@ -188,4 +188,6 @@ public class HomeController {
         model.addAttribute("medicines", medicines);
         return "redirect:/my_request";
     }
+
+
 }
