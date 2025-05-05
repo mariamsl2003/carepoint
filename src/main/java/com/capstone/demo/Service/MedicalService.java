@@ -46,8 +46,8 @@ public class MedicalService {
         return medicalRepository.findByRequestResult();
     }
 
-    // get medical byrequestResult (test it when finsish the doc volunteer profile)
-    public Optional<List<MedicalModel>> getMedicalPending() {
+    // get medical by requestResult (test it when finish the doc volunteer profile)
+    public List<MedicalModel> getMedicalPending() {
         return medicalRepository.findByRequestResultPending();
     }
 

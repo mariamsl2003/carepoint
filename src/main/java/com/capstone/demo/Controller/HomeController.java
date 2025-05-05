@@ -173,6 +173,7 @@ public class HomeController {
         return "redirect:/my_request";
     }
 
+    //shows only the medicals in my_request
     @GetMapping("/mymedical")
     public String myMedical(Model model, @RequestParam("member_id") UUID id) {
         MemberModel member = memberService.findById(id);
@@ -181,6 +182,7 @@ public class HomeController {
         return "redirect:/my_request";
     }
 
+    //shows only the medicines in my_request
     @GetMapping("/mymedicine")
     public String myMedicine(Model model, @RequestParam("member_id") UUID id) {
         MemberModel member = memberService.findById(id);
@@ -189,5 +191,34 @@ public class HomeController {
         return "redirect:/my_request";
     }
 
+    //validation of the request
+    @GetMapping("/validation")
+    public String validation(Model model){
+        List<MedicineModel> medicines = medicineService.getMedicinePending();
+        List<MedicalModel> medicals = medicalService.getMedicalPending();
+        model.addAttribute("items", medicals);
+        model.addAttribute("items", medicines);
+        return "request_validation";
+    }
+
+    //search for requests in the validation
+    @GetMapping("/validate_search")
+    public String validateSearch(Model model, @RequestParam("name") String name) {
+        List<MedicalModel> medicals = medicalService.getMedicalPending();
+        List<MedicineModel> medicines = medicineService.getMedicinePending();
+        int i = 0;
+        while(!medicals.isEmpty() && !medicines.isEmpty()){
+            if(medicals.get(i).getName().equals(name)){
+                model.addAttribute("item", medicals.get(i));
+            }
+            if(medicines.get(i).getName().equals(name)){
+                model.addAttribute("item", medicines.get(i));
+            }
+
+            i++;
+        }
+        return "redirect:/request_validation";
+    }
+    // still need to have cards info page tht shows us the validation button inside it
 
 }

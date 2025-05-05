@@ -18,7 +18,7 @@ public interface MedicineRepository extends JpaRepository<MedicineModel, UUID> {
     Optional<List<MedicineModel>> findByRequestResult();
 
     @Query(value = "select * from medicine where requestResult = 'PENDING'", nativeQuery = true)
-    Optional<List<MedicineModel>> findByRequestResultPending();
+    List<MedicineModel> findByRequestResultPending();
 
     @Query(value = "select * from medicine where name = ?1", nativeQuery = true)
     Optional<List<MedicineModel>> findByName(String name);
