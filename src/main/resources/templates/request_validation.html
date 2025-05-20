@@ -6,7 +6,7 @@
 </head>
 <body>
 <!-- Header -->
-<!-- <div th:insert="fragments :: header"></div> -->
+<div th:insert="fragments :: header"></div>
 
 <!-- Main Content -->
 <div>
@@ -22,7 +22,7 @@
 
     <!-- from the search form -->
     <div th:if="${item} != null">
-        <div class="card mb-4">
+        <div class="card mb-4" onclick="goToCardInfo(${item.id})">
             <!-- The medicine image -->
             <img class="card-img-top" src="@{${item.imagePath}}" alt="item image">
             <div class="card-body">
@@ -39,7 +39,7 @@
         <div class="row">
             <div th:if="${items} != null">
                 <div class="col-md-4" th:each="item : ${items}">
-                    <div class="card mb-4">
+                    <div class="card mb-4" onclick="goToCardInfo(${item.id})">
                         <!-- The medicine image -->
                         <img class="card-img-top" src="@{${item.imagePath}}" alt="item image">
                         <div class="card-body">
@@ -64,6 +64,13 @@
             </div>
         </div>
     </div>
+    <!-- makes the cards clickable and navigate to cards info -->
+    <script>
+        function goToCardInfo(cardId) {
+          // Navigate to cards_info.html with card ID in URL query params
+          window.location.href = `cards_info.html?id=${cardId}`;
+        }
+    </script>
 </div>
 
 <!-- Footer -->

@@ -7,7 +7,7 @@
     </head>
     <body>
         <!-- Header -->
-         <!-- <div th:insert="fragments :: header"></div> -->
+         <div th:insert="fragments :: header"></div>
         
         <!-- main content -->
         <div>
@@ -32,7 +32,7 @@
                      <div th:if="${med} != null">
                         <!-- this from the search -->
                         <div class="col-md-4" th:each="medi : ${med}">
-                            <div class="card mb-4">
+                            <div class="card mb-4" onclick="goToCardInfo(${medi.id})">
                                 <!-- The item image -->
                                 <img class="card-img-top" src="@{${medi.imagePath}}" alt="item image">
                                 <div class="card-body">
@@ -49,7 +49,7 @@
                         <!-- all medicines and medicals -->
                          <div th:if="${medicines} != null">
                             <div class="col-md-4" th:each="medicine : ${medicines}">
-                                <div class="card mb-4">
+                                <div class="card mb-4" onclick="goToCardInfo(${medicine.id})">
                                     <!-- The medicine image -->
                                     <img class="card-img-top" src="@{${medicine.imagePath}}" alt="medicine image">
                                     <div class="card-body">
@@ -63,7 +63,7 @@
                          </div>
                         <div th:if="${medicals} != null">
                             <div class="col-md-4" th:each="medical : ${medicals}">
-                                <div class="card mb-4">
+                                <div class="card mb-4" onclick="goToCardInfo(${medical.id})">
                                     <!-- The medical image -->
                                     <img class="card-img-top" src="@{${medical.imagePath}}" alt="medical image">
                                     <div class="card-body">
@@ -79,6 +79,13 @@
                     </div>
                  </div>
              </div>
+            <!-- makes the cards clickable and navigate to cards info -->
+            <script>
+                function goToCardInfo(cardId) {
+                  // Navigate to cards_info.html with card ID in URL query params
+                  window.location.href = `cards_info.html?id=${cardId}`;
+                }
+            </script>
         </div>
         <!-- Footer -->
         <div th:insert="fragments :: footer"></div>

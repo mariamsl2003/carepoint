@@ -6,24 +6,13 @@
     <title>Home Page</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <!--
-    <style>
-        /* Custom styles for colors */
-        .header-link {
-            color: blue; /* Change link color to blue */
-        }
-        .header-link:hover {
-            color: green; /* Change link color to green on hover */
-        }
-    </style>
--->
 </head>
 <body>
 
-    <!-- 
+
     <div th:insert="fragments :: header"> Header </div>
 
-     Body of the home  
+     <!-- Body of the home -->
     <div class="container mt-4">
         <div class="row">
              Welcome section 
@@ -37,13 +26,13 @@
                         Here where you can find your medicine and medical instruments.
                         Get started from here ->
                     </p>
-                    <form th:action="@{/register}" method="get">
+                    <form th:action="@{/users/signup}" method="get">
                         <button type="submit" class="btn btn-primary">Register</button>
                     </form>
                 </div>
             </div>
         </div>
-    -->
+
          <!-- Medicine Section -->
         <div class="row mt-4">
             <div class="col-md-12" th:if="${medicines} != null">
@@ -126,11 +115,5 @@
         </div>
     </div>
     <div th:insert="fragments :: footer"> <!-- Footer --> </div>
-
-     Bootstrap JS and dependencies 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2
--->
 </body>
 </html>

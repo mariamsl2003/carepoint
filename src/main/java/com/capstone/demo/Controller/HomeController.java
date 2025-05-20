@@ -22,6 +22,8 @@ import com.capstone.demo.Service.MedicalService;
 import com.capstone.demo.Service.MedicineService;
 import com.capstone.demo.Service.MemberService;
 
+import javax.swing.text.html.Option;
+
 @Controller
 public class HomeController {
 
@@ -88,7 +90,7 @@ public class HomeController {
     // user authentication
     private void authenticate(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        MemberModel member = null;
+        Optional<MemberModel> member = null;
 
         if (authentication != null && authentication.isAuthenticated()) {
             String username = authentication.getName();
@@ -131,6 +133,7 @@ public class HomeController {
         return "new_donation";
     }
 
+    //form method
     @PostMapping("/new-donation")
     public String addDonation(@RequestParam("member_id") UUID id, @RequestParam("type") String type,
             @RequestParam("name") String name, @RequestParam("description") String description,
@@ -219,6 +222,18 @@ public class HomeController {
         }
         return "redirect:/request_validation";
     }
-    // still need to have cards info page tht shows us the validation button inside it
+    // still need to have cards info page that shows us the validation button inside it
+    @GetMapping("/cards")
+    public String cardsInfo(@RequestParam("member_id") UUID id, Model model){
+        if (medicalService.getMedicalById(id).isPresent()) {
+            Optional<MedicalModel> medical = medicalService.getMedicalById(id);
+            model.addAttribute("med", medical);
+        } else {
+            Optional<MedicineModel> medicine = medicineService.getMedicineById(id);
+            model.addAttribute("med", medicine);
+        }
+
+        return "cards_info";
+    }
 
 }

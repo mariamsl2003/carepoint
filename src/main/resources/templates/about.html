@@ -7,7 +7,7 @@
         <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     </head>
     <body>
-        <!-- <div th:insert="fragments :: header">  Header  </div> -->
+         <div th:include="fragments :: header"> <!-- Header --> </div>
         
 
         <!-- Body of the about -->
@@ -33,10 +33,6 @@
             </div>
         </div>
 
-         <div th:insert="fragments :: footer"> <!-- Footer --></div>
-
-         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2"></script>
+         <div th:include="fragments :: footer"> <!-- Footer --></div>
     </body>
 </html>

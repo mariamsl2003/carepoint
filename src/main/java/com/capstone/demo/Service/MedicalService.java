@@ -84,4 +84,10 @@ public class MedicalService {
         return medicalsRequested;
     }
 
+    //find the medical according to its id
+    public Optional<MedicalModel> getMedicalById(UUID id){
+        Optional<MedicalModel> medical = medicalRepository.findMedicalByID(id);
+        return medical;
+    }
+
 }

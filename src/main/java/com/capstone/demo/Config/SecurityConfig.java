@@ -1,14 +1,28 @@
 package com.capstone.demo.Config;
 
+import com.capstone.demo.Model.MemberModel;
+import com.capstone.demo.Repository.MemberRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
+
+import java.lang.reflect.Member;
+import java.util.Optional;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    @Autowired
+    MemberRepository memberRepository;
+    private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
 
     @SuppressWarnings("removal")
     @Bean
@@ -16,19 +30,40 @@ public class SecurityConfig {
         http.csrf().disable() // Disable CSRF protection if not needed
                 .authorizeHttpRequests(auth -> {
                     // Allow access to these endpoints without authentication
-                    auth.requestMatchers("/home", "/about", "medical", "/medicine", "/profile", "/profile/edit",
+                    auth.requestMatchers("/","/home", "/about", "/medical", "/medicine", "/profile", "/profile/edit",
                             "/memberimg", "/volunteering", "/volunteer", "/donation", "/new-donation",
                             "/medical/medicals", "/medical/medicals/search", "/medicine/medicines",
-                            "/medicine/medicines/search").permitAll();
+                            "/medicine/medicines/search", "/myrequest", "/search", "/mymidical",
+                            "/mymedicine", "/validation", "/validation_search", "/cards", "/users/signup", "/users/signing").permitAll();
 
                     auth.requestMatchers("/login").permitAll();
                     // Allow all other requests without authentication
                     auth.anyRequest().permitAll();
                 })
                 .formLogin(form -> form
-                        .defaultSuccessUrl("/home", true) // Redirect users to home page after login
-                        .permitAll() // Allow all users to access the login page
+                        .loginPage("/users/login")
+                        .permitAll()
+                        .successHandler((request, response, authentication) -> {
+                            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                            if (auth != null && auth.getPrincipal() != null) {
+                                logger.info("Authenticated user: " + auth.getName());
+                                logger.info("User roles: " + auth.getAuthorities());
+
+                                String username = auth.getName();
+                                Optional<MemberModel> member = memberRepository.findUserByUserName(username); // Inject userRepository
+                                member.ifPresent(user -> request.getSession().setAttribute("loggedInUser", user));
+                            }
+
+                            //if (authentication.getAuthorities().stream().anyMatch(ga -> ga.getAuthority().equals("ADMIN"))) {
+                              //  response.sendRedirect("/admin/dashboard");
+                            //} else {
+                               response.sendRedirect("/home");
+                            //}
+                        })
+
+
                 )
+
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/home?logout")

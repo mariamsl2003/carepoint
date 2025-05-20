@@ -26,16 +26,16 @@
                                 <li class="nav-item"><a style="color: blue;" th:href="@{/about}">Who are we?</a></li>  
                             </ul>
                             <div th:if="${user = null}">
-                                <a style="color: blue;" th:href="@{/sign-up}">Sign Up</a>
+                                <a style="color: blue;" th:href="@{/users/signup}">Sign Up</a>
                             </div>
                             <div th:if="${user != null}">
                                 <div>
                                     <img src="@{${user.imagePath != null} ? ${user.imagePath} : @{/assets/account.png}}" alt="profile image" style="width: 40px; height: 40px; border-radius: 50%;">
                                     <div style="display: block;">
                                         <a style="color: blue;" th:href="@{/profile}">Profile</a>
-                                        <a style="color: blue;" th:href="@{/my-reuest}">my request</a>
+                                        <a style="color: blue;" th:href="@{/myrequest}">my request</a>
                                         <div th:if="${user.volunteer == PHARMACIST}">
-                                            <a style="color: blue;" th:href="@{/request-validation}">request-validation</a>
+                                            <a style="color: blue;" th:href="@{/validation}">request-validation</a>
                                         </div>
                                     </div>
                                 </div>
@@ -43,6 +43,7 @@
 
                         </div>
                     </div>
+                </div>
             </nav>
         </header>
 
@@ -76,9 +77,5 @@
                 </div>
             </div>
         </footer>
-
-        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2"></script>
     </body>
 </html>

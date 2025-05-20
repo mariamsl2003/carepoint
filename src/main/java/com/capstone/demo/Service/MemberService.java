@@ -3,6 +3,7 @@ package com.capstone.demo.Service;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,14 +22,14 @@ public class MemberService {
     private MemberRepository memberRepository;
 
     // create member (test it when done with login)
-    public MemberModel createMember(String username, String passsword, long phoneNumber) {
-        MemberModel member = new MemberModel(username, passsword, phoneNumber, Volunteering.MEMEBR);
+    public MemberModel createMember(String username, String password, long phoneNumber) {
+        MemberModel member = new MemberModel(username, password, phoneNumber, Volunteering.MEMEBR);
         member = memberRepository.save(member);
         return member;
     }
 
     // find member by username (test it when done with login)
-    public MemberModel findMemberByUserName(String username) {
+    public Optional<MemberModel> findMemberByUserName(String username) {
         return memberRepository.findUserByUserName(username);
     }
 

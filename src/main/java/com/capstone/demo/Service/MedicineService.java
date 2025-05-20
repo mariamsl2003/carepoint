@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.capstone.demo.Model.MedicalModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -82,5 +83,11 @@ public class MedicineService {
             i++;
         }
         return medicinesRequested;
+    }
+
+    //find the medicine according to its id
+    public Optional<MedicineModel> getMedicineById(UUID id){
+        Optional<MedicineModel> medicine = medicineRepository.findMedicineByID(id);
+        return medicine;
     }
 }

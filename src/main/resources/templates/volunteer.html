@@ -7,15 +7,15 @@
     </head>
     <body>
         <!-- Header -->
-         <!-- <div th:insert="fragments :: header"></div> -->
+         <div th:insert="fragments :: header"></div>
         
         <!-- main content -->
         <div>
             <form action="/volunteer" method="post">
                 <input type="hidden" id="username" value="${member.username}">
-                <label for="certificant_date">Certificant Date</label>
+                <label for="cer_date">Certificant Date</label>
                 <input type="text" id="cer_date" name="certificant_date" required>
-                <label for="syndicate_id">Syndicate Id</label>
+                <label for="sy_id">Syndicate Id</label>
                 <input type="text" id="sy_id" name="syndicate_id" required>
 
                 <button type="submit">request</button>

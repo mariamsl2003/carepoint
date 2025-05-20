@@ -7,7 +7,7 @@
     </head>
     <body>
         <!-- Header -->
-         <!-- <div th:insert="fragments :: header"></div> -->
+         <div th:insert="fragments :: header"></div>
         
         <!-- main content -->
          <div>
@@ -16,7 +16,7 @@
                 <input type="hidden" name="member_id" value="${id}">
 
                 <label for="type">Type</label>
-                <select name="type">
+                <select id="type" name="type">
                     <option value="medicine">Medicine</option>
                     <option value="medical-supplies">Medical Supplies</option>
                 </select>

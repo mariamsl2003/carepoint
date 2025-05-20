@@ -9,7 +9,7 @@
 </head>
 <body>
     <!-- Header -->
-    <!-- <div th:insert="fragments :: header"></div> -->
+    <div th:insert="fragments :: header"></div>
 
     <!-- Main content -->
     <div class="container mt-4">
@@ -25,7 +25,7 @@
         <div class="row">
             <div th:if="${medicines} != null">
                 <div class="col-md-4" th:each="medicine : ${medicines}">
-                    <div class="card mb-4">
+                    <div class="card mb-4" onclick="goToCardInfo(${medicine.id})">
                         <!-- The medicine image -->
                         <img class="card-img-top" src="@{${medicine.imagePath}}" alt="medicine image">
                         <div class="card-body">
@@ -51,14 +51,16 @@
             </div>
             
         </div>
+        <!-- makes the cards clickable and navigate to cards info -->
+        <script>
+            function goToCardInfo(cardId) {
+              // Navigate to cards_info.html with card ID in URL query params
+              window.location.href = `cards_info.html?id=${cardId}`;
+            }
+        </script>
     </div>
 
     <!-- Footer -->
     <div th:insert="fragments :: footer"></div>
-
-    <!-- Bootstrap JS and dependencies (optional) -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
