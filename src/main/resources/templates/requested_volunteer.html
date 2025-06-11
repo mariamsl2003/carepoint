@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Request To be Volunteer</title>
+</head>
+<body>
+<!-- this is a right nav bar -->
+<div>
+  <ul>
+    <li>
+      <a href="@{/admin/medi">Medicines and Medicals</a>
+    </li>
+    <li>
+      <a href="@{/admin/volunteer}">Volunteers Requested</a>
+    </li>
+  </ul>
+</div>
+<div>
+    <h1>Member Requested to be pharmacist</h1>
+    <table>
+        <thead>
+        <tr>
+            <th>Username</th>
+            <th>Phone number</th>
+            <th>Certificant date</th>
+            <th>Syndicate Id</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="member : ${members}">
+            <td th:text="${member.name}"></td>
+            <td th:text="${member.phoneNumber}"></td>
+            <td th:text="${member.volunteerCertificantDate}"></td>
+            <td th:text="${member.volunteerSyndicateId}"></td>
+            <td>
+                <form th:action="@{|/admin/${member.id}/accept|}" method="post">
+                    <button type="submit" class="btn btn-accept" aria-label="Accept member">Accept</button>
+                </form>
+                <form th:action="@{|/admin/${member.id}/reject|}" method="post">
+                    <button type="submit" class="btn btn-reject" aria-label="Reject member">Reject</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(members)}">
+            <td colspan="3" style="text-align:center; color:#6b7280;">No pending members</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

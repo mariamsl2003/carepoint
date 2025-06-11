@@ -2,17 +2,21 @@ package com.capstone.demo.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.capstone.demo.Enum.RequestVolunteer;
+import com.capstone.demo.Enum.Roles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.capstone.demo.Enum.Volunteering;
 import com.capstone.demo.Model.MemberModel;
 import com.capstone.demo.Repository.MemberRepository;
+
+import javax.xml.crypto.Data;
 
 @Service
 public class MemberService {
@@ -23,7 +27,7 @@ public class MemberService {
 
     // create member (test it when done with login)
     public MemberModel createMember(String username, String password, long phoneNumber) {
-        MemberModel member = new MemberModel(username, password, phoneNumber, Volunteering.MEMEBR);
+        MemberModel member = new MemberModel(username, password, phoneNumber, Roles.MEMEBR);
         member = memberRepository.save(member);
         return member;
     }
@@ -34,7 +38,7 @@ public class MemberService {
     }
 
     // find member by id
-    public MemberModel findById(UUID id) {
+    public MemberModel findById(Long id) {
         return memberRepository.findMemberById(id);
     }
 
@@ -56,12 +60,41 @@ public class MemberService {
     }
 
     // updating the member
-    public MemberModel updateMember(UUID id, String username, long phoneNumber, String password) {
+    public MemberModel updateMember(Long id, String username, long phoneNumber, String password) {
         MemberModel member = memberRepository.findMemberById(id);
         member.setPassword(password);
         member.setPhoneNumber(phoneNumber);
         member.setUsername(username);
         memberRepository.save(member);
         return member;
+    }
+
+    //get member by its request to be a volunteer
+    public List<MemberModel> getPendingMember(){
+        return memberRepository.getPendingMember();
+    }
+
+    //update the role and volunteering request if accepting
+    public void updateRole(Long id){
+        MemberModel member = memberRepository.findMemberById(id);
+        member.setRole(Roles.PHARMACIST);
+        member.setRequest(RequestVolunteer.ACCEPTED);
+        memberRepository.save(member);
+    }
+
+    //update only volunteering request if rejecting
+    public void updateVolunteer(Long id){
+        MemberModel member = memberRepository.findMemberById(id);
+        member.setRequest(RequestVolunteer.REJECTED);
+        memberRepository.save(member);
+    }
+
+    //update volunteer to be requested
+    public void updatePending(Long id, Date certificantDate, String syndicateId){
+        MemberModel member = memberRepository.findMemberById(id);
+        member.setRequest(RequestVolunteer.PENDING);
+        member.setVolunteerCertificantDate(certificantDate);
+        member.setVolunteerSyndicateId(syndicateId);
+        memberRepository.save(member);
     }
 }

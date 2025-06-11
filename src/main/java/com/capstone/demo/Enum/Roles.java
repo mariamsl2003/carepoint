@@ -1,6 +1,7 @@
 package com.capstone.demo.Enum;
 
-public enum Volunteering {
+public enum Roles {
     MEMEBR,
-    PHARMACIST
+    PHARMACIST,
+    ADMIN
 }

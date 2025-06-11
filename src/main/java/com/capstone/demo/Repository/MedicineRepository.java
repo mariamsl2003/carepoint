@@ -13,7 +13,7 @@ import com.capstone.demo.Model.MedicineModel;
 public interface MedicineRepository extends JpaRepository<MedicineModel, UUID> {
 
     @Query(value = "select * from medicine where member_id = ?1", nativeQuery = true)
-    Optional<List<MedicineModel>> findByMemberId(UUID id);
+    Optional<List<MedicineModel>> findByMemberId(Long id);
 
     @Query(value = "select * from medicine where requestResult = 'ACCEPTED'", nativeQuery = true)
     Optional<List<MedicineModel>> findByRequestResult();
@@ -31,6 +31,6 @@ public interface MedicineRepository extends JpaRepository<MedicineModel, UUID> {
     List<MedicineModel> findMedicinesByRequested();
 
     @Query(value = "select * from medicine where  id = ?1", nativeQuery = true)
-    Optional<MedicineModel> findMedicineByID(UUID id);
+    Optional<MedicineModel> findMedicineByID(Long id);
 
 }

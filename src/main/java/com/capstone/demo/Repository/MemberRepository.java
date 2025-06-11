@@ -1,5 +1,6 @@
 package com.capstone.demo.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -13,6 +14,9 @@ public interface MemberRepository extends JpaRepository<MemberModel, UUID> {
     Optional<MemberModel> findUserByUserName(String name);
 
     @Query(value = "select * from member where id = ?1", nativeQuery = true)
-    MemberModel findMemberById(UUID id);
+    MemberModel findMemberById(Long id);
+
+    @Query(value = "select * from member where request = PENDING", nativeQuery = true)
+    List<MemberModel> getPendingMember();
 
 }

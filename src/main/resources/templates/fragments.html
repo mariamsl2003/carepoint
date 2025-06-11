@@ -25,17 +25,17 @@
                                 <li class="nav-item"><a style="color: blue;" th:href="@{/medical}">Medical instruments</a></li>
                                 <li class="nav-item"><a style="color: blue;" th:href="@{/about}">Who are we?</a></li>  
                             </ul>
-                            <div th:if="${user = null}">
+                            <div th:if="${!user.isPresent()}">
                                 <a style="color: blue;" th:href="@{/users/signup}">Sign Up</a>
                             </div>
-                            <div th:if="${user != null}">
+                            <div th:if="${user.isPresent()}">
                                 <div>
                                     <img src="@{${user.imagePath != null} ? ${user.imagePath} : @{/assets/account.png}}" alt="profile image" style="width: 40px; height: 40px; border-radius: 50%;">
                                     <div style="display: block;">
                                         <a style="color: blue;" th:href="@{/profile}">Profile</a>
                                         <a style="color: blue;" th:href="@{/myrequest}">my request</a>
-                                        <div th:if="${user.volunteer == PHARMACIST}">
-                                            <a style="color: blue;" th:href="@{/validation}">request-validation</a>
+                                        <div th:if="${user.role} == Roles.PHARMACIST">
+                                            <a style="color: blue;" th:href="@{/pharmacist/validation}">request-validation</a>
                                         </div>
                                     </div>
                                 </div>

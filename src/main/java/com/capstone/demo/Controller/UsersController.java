@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/users")
 public class UsersController {
 
+    //logging in and signing in
+
     @Autowired
     MemberService memberService;
 

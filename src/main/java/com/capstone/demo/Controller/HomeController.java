@@ -1,6 +1,7 @@
 package com.capstone.demo.Controller;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,6 +28,8 @@ import javax.swing.text.html.Option;
 
 @Controller
 public class HomeController {
+
+    //for member
 
     @Autowired
     MedicalService medicalService;
@@ -70,7 +74,7 @@ public class HomeController {
 
     // navigating to profile page
     @GetMapping("/profile")
-    public String profile(@RequestParam("member_id") UUID id, @RequestParam(required = false) Boolean edit,
+    public String profile(@RequestParam("member_id") Long id, @RequestParam(required = false) Boolean edit,
             Model model) {
         MemberModel member = memberService.findById(id);
         model.addAttribute("user", member);
@@ -81,7 +85,7 @@ public class HomeController {
 
     // profile editting mode
     @PostMapping("/profile/edit")
-    public String editProfile(@RequestParam("member_id") UUID id, @RequestParam String username,
+    public String editProfile(@RequestParam("member_id") Long id, @RequestParam String username,
             @RequestParam String password, @RequestParam long phoneNumber) {
         memberService.updateMember(id, username, phoneNumber, password);
         return "redirect:/profile?member_id=" + id;
@@ -114,28 +118,29 @@ public class HomeController {
 
     // navigating to volunteer request page to request to be a volunteer
     @GetMapping("/volunteering")
-    public String volunteering(@RequestParam("member_id") UUID id, Model model) {
+    public String volunteering(@RequestParam("member_id") Long id, Model model) {
         MemberModel member = memberService.findById(id);
         model.addAttribute("member", member);
         return "volunteer";
     }
 
-    @PostMapping("/volunteer")
-    public String volunteer() {
-        // make logic to send the form to the admin when admin side time comes
+    //volunteer form
+    @PostMapping("/{id}/volunteer")
+    public String volunteer(@PathVariable Long id, @RequestParam("certificant_date")Date certificantDate, @RequestParam("syndicate_id") String syndicateId) {
+        memberService.updatePending(id, certificantDate, syndicateId);
         return "redirect:/profile";
     }
 
     // navigating to the adding new donation form
     @GetMapping("/donation")
-    public String addNewDonation(@RequestParam("member_id") UUID id, Model model) {
+    public String addNewDonation(@RequestParam("member_id") Long id, Model model) {
         model.addAttribute("id", id);
         return "new_donation";
     }
 
     //form method
     @PostMapping("/new-donation")
-    public String addDonation(@RequestParam("member_id") UUID id, @RequestParam("type") String type,
+    public String addDonation(@RequestParam("member_id") Long id, @RequestParam("type") String type,
             @RequestParam("name") String name, @RequestParam("description") String description,
             @RequestParam("image") MultipartFile image) throws IOException {
         MemberModel member = memberService.findById(id);
@@ -154,7 +159,7 @@ public class HomeController {
 
     // go to my_request page:
     @GetMapping("/myrequest")
-    public String myRequest(@RequestParam("member_id") UUID id, Model model) {
+    public String myRequest(@RequestParam("member_id") Long id, Model model) {
         MemberModel member = memberService.findById(id);
         List<MedicineModel> medicines = medicineService.getRequestedMedicine(member);
         List<MedicalModel> medicals = medicalService.getRequestedMedical(member);
@@ -178,7 +183,7 @@ public class HomeController {
 
     //shows only the medicals in my_request
     @GetMapping("/mymedical")
-    public String myMedical(Model model, @RequestParam("member_id") UUID id) {
+    public String myMedical(Model model, @RequestParam("member_id") Long id) {
         MemberModel member = memberService.findById(id);
         List<MedicalModel> medicals = medicalService.getRequestedMedical(member);
         model.addAttribute("medicals", medicals);
@@ -187,44 +192,18 @@ public class HomeController {
 
     //shows only the medicines in my_request
     @GetMapping("/mymedicine")
-    public String myMedicine(Model model, @RequestParam("member_id") UUID id) {
+    public String myMedicine(Model model, @RequestParam("member_id") Long id) {
         MemberModel member = memberService.findById(id);
         List<MedicineModel> medicines = medicineService.getRequestedMedicine(member);
         model.addAttribute("medicines", medicines);
         return "redirect:/my_request";
     }
 
-    //validation of the request
-    @GetMapping("/validation")
-    public String validation(Model model){
-        List<MedicineModel> medicines = medicineService.getMedicinePending();
-        List<MedicalModel> medicals = medicalService.getMedicalPending();
-        model.addAttribute("items", medicals);
-        model.addAttribute("items", medicines);
-        return "request_validation";
-    }
 
-    //search for requests in the validation
-    @GetMapping("/validate_search")
-    public String validateSearch(Model model, @RequestParam("name") String name) {
-        List<MedicalModel> medicals = medicalService.getMedicalPending();
-        List<MedicineModel> medicines = medicineService.getMedicinePending();
-        int i = 0;
-        while(!medicals.isEmpty() && !medicines.isEmpty()){
-            if(medicals.get(i).getName().equals(name)){
-                model.addAttribute("item", medicals.get(i));
-            }
-            if(medicines.get(i).getName().equals(name)){
-                model.addAttribute("item", medicines.get(i));
-            }
-
-            i++;
-        }
-        return "redirect:/request_validation";
-    }
     // still need to have cards info page that shows us the validation button inside it
+
     @GetMapping("/cards")
-    public String cardsInfo(@RequestParam("member_id") UUID id, Model model){
+    public String cardsInfo(@RequestParam("member_id") Long id, Model model){
         if (medicalService.getMedicalById(id).isPresent()) {
             Optional<MedicalModel> medical = medicalService.getMedicalById(id);
             model.addAttribute("med", medical);

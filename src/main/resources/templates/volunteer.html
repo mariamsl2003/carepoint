@@ -11,7 +11,7 @@
         
         <!-- main content -->
         <div>
-            <form action="/volunteer" method="post">
+            <form action="{${member.id}}/volunteer" method="post">
                 <input type="hidden" id="username" value="${member.username}">
                 <label for="cer_date">Certificant Date</label>
                 <input type="text" id="cer_date" name="certificant_date" required>

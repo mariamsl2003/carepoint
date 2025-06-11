@@ -1,9 +1,11 @@
 package com.capstone.demo.Model;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import com.capstone.demo.Enum.Volunteering;
+import com.capstone.demo.Enum.RequestVolunteer;
+import com.capstone.demo.Enum.Roles;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -63,12 +65,12 @@ public class MemberModel {
         this.imagePath = imagePath;
     }
 
-    public Volunteering getVolunteer() {
-        return volunteer;
+    public Roles getRole() {
+        return role;
     }
 
-    public void setVolunteer(Volunteering volunteer) {
-        this.volunteer = volunteer;
+    public void serRole(Roles role) {
+        this.role = role;
     }
 
     public List<MedicineModel> getMedicines() {
@@ -87,12 +89,28 @@ public class MemberModel {
         this.medicals = medicals;
     }
 
+    public void setRole(Roles role) {
+        this.role = role;
+    }
+
+    public RequestVolunteer getRequest() {
+        return request;
+    }
+
+    public void setRequest(RequestVolunteer request) {
+        this.request = request;
+    }
+
     private String password;
     private long phoneNumber;
     private String imagePath;
 
     @Enumerated(EnumType.STRING)
-    private Volunteering volunteer;
+    private Roles role;
+
+    @Enumerated(EnumType.STRING)
+    private RequestVolunteer request;
+
 
     @OneToMany(mappedBy = "member")
     private List<MedicineModel> medicines;
@@ -100,10 +118,30 @@ public class MemberModel {
     @OneToMany(mappedBy = "member")
     private List<MedicalModel> medicals;
 
-    public MemberModel(String username, String password, long phoneNumber, Volunteering volunteer) {
+    private Date volunteerCertificantDate;
+
+    private String volunteerSyndicateId;
+
+    public Date getVolunteerCertificantDate() {
+        return volunteerCertificantDate;
+    }
+
+    public void setVolunteerCertificantDate(Date volunteerCertificantDate) {
+        this.volunteerCertificantDate = volunteerCertificantDate;
+    }
+
+    public String getVolunteerSyndicateId() {
+        return volunteerSyndicateId;
+    }
+
+    public void setVolunteerSyndicateId(String volunteerSyndicateId) {
+        this.volunteerSyndicateId = volunteerSyndicateId;
+    }
+
+    public MemberModel(String username, String password, long phoneNumber, Roles role) {
         this.username = username;
         this.password = password;
         this.phoneNumber = phoneNumber;
-        this.volunteer = volunteer;
+        this.role = role;
     }
 }

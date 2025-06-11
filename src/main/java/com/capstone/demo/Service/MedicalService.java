@@ -37,7 +37,7 @@ public class MedicalService {
     }
 
     // get medical by member (test it when finish the profile)
-    public Optional<List<MedicalModel>> getMedicalByMember(UUID id) {
+    public Optional<List<MedicalModel>> getMedicalByMember(Long id) {
         return medicalRepository.findByMemberId(id);
     }
 
@@ -85,7 +85,7 @@ public class MedicalService {
     }
 
     //find the medical according to its id
-    public Optional<MedicalModel> getMedicalById(UUID id){
+    public Optional<MedicalModel> getMedicalById(Long id){
         Optional<MedicalModel> medical = medicalRepository.findMedicalByID(id);
         return medical;
     }
