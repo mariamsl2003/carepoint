@@ -1,0 +1,35 @@
+package com.capstone.demo.Repository;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import com.capstone.demo.Model.MedicalModel;
+
+public interface MedicalRepository extends JpaRepository<MedicalModel, UUID> {
+
+    @Query(value = "select * from medical where member_id = ?1", nativeQuery = true)
+    Optional<List<MedicalModel>> findByMemberId(Long id);
+
+    @Query(value = "select * from medical where requestResult = 'ACCEPTED'", nativeQuery = true)
+    Optional<List<MedicalModel>> findByRequestResult();
+
+    @Query(value = "select * from medical where requestResult = 'PENDING'", nativeQuery = true)
+    List<MedicalModel> findByRequestResultPending();
+
+    @Query(value = "select * from medical where name = ?1", nativeQuery = true)
+    Optional<List<MedicalModel>> findByName(String name);
+
+    @Query(value = "select * from medical limit 3", nativeQuery = true)
+    List<MedicalModel> findThreeRandomMedical();
+
+    @Query(value = "select * from medical where requested = 'REQUESTED'", nativeQuery = true)
+    List<MedicalModel> findMedicalsByRequested();
+
+    @Query(value = "select * from medical where  id = ?1", nativeQuery = true)
+    Optional<MedicalModel> findMedicalByID(Long id);
+
+}

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Medicine Page</title>
+    </head>
+    <body>
+        <!-- Header -->
+         <div th:insert="fragments :: header"></div>
+        
+        <!-- main content -->
+        <div>
+            <!-- here is the cards -->
+             <div>
+                <!-- search button -->
+                 <div>
+                    <form th:action="@{/search}" method="get" class="form-inline">
+                        <input type="text" name="name" class="form-control mr-2" placeholder="Enter medicine name" required />
+                        <button type="submit" class="btn btn-primary">Search</button>
+                    </form>
+                 </div>
+                <!-- on the right, two buttons: one shows only the medicine and the other only the medical -->
+                <div>
+                    <a href="/mymedicine">Medicine</a>
+                    <a href="/mymedical">Medical Instrument</a>
+                </div>
+                 
+                <!-- in the middle and left, cards of the items we have, normally all medicines and medicals -->
+                <div>
+                    <!-- see first if it comes from the search button -->
+                     <div th:if="${med} != null">
+                        <!-- this from the search -->
+                        <div class="col-md-4" th:each="medi : ${med}">
+                            <div class="card mb-4" onclick="goToCardInfo(${medi.id})">
+                                <!-- The item image -->
+                                <img class="card-img-top" src="@{${medi.imagePath}}" alt="item image">
+                                <div class="card-body">
+                                    <!-- The item info -->
+                                    <h5 class="card-title" th:text="${medi.name}"></h5>
+                                    <p class="card-text" th:text="${medi.description}"></p>
+                                    <p class="card-text"><small class="text-muted" th:text="${medi.member.username}"></small></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- if it not from the search -->
+                    <div th:if="${med} == null">
+                        <!-- all medicines and medicals -->
+                         <div th:if="${medicines} != null">
+                            <div class="col-md-4" th:each="medicine : ${medicines}">
+                                <div class="card mb-4" onclick="goToCardInfo(${medicine.id})">
+                                    <!-- The medicine image -->
+                                    <img class="card-img-top" src="@{${medicine.imagePath}}" alt="medicine image">
+                                    <div class="card-body">
+                                        <!-- The medicine info -->
+                                        <h5 class="card-title" th:text="${medicine.name}"></h5>
+                                        <p class="card-text" th:text="${medicine.description}"></p>
+                                        <p class="card-text"><small class="text-muted" th:text="${medicine.member.username}"></small></p>
+                                    </div>
+                                </div>
+                            </div>
+                         </div>
+                        <div th:if="${medicals} != null">
+                            <div class="col-md-4" th:each="medical : ${medicals}">
+                                <div class="card mb-4" onclick="goToCardInfo(${medical.id})">
+                                    <!-- The medical image -->
+                                    <img class="card-img-top" src="@{${medical.imagePath}}" alt="medical image">
+                                    <div class="card-body">
+                                        <!-- The medicine info -->
+                                        <h5 class="card-title" th:text="${medical.name}"></h5>
+                                        <p class="card-text" th:text="${medical.description}"></p>
+                                        <p class="card-text"><small class="text-muted" th:text="${medical.member.username}"></small></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                 </div>
+             </div>
+            <!-- makes the cards clickable and navigate to cards info -->
+            <script>
+                function goToCardInfo(cardId) {
+                  // Navigate to cards_info.html with card ID in URL query params
+                  window.location.href = `cards_info.html?id=${cardId}`;
+                }
+            </script>
+        </div>
+        <!-- Footer -->
+        <div th:insert="fragments :: footer"></div>
+    </body>
+
+</html>

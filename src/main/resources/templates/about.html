@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>About Page</title>
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+    <body>
+         <div th:include="fragments :: header"> <!-- Header --> </div>
+        
+
+        <!-- Body of the about -->
+        <div class="container">
+            <div class="row">
+                <div class="col-md-5">
+                    <h1>Carepoint</h1>
+                    <h2>Who Are We?</h2>
+                </div>
+                <div class="col-md-7"> <!-- Adjusted to col-md-7 to fit the layout -->
+                    <p>
+                        We are your assistant to find what you need, whether it's medicine or medical instruments!
+                        <strong>
+                            Do you have medicine you don't need anymore?
+                            Or medical instruments you don't use?
+                        </strong>
+                        Here we will help you find people who need them and search for your needs too!
+                        With our professional volunteers, you will know if the medicine you have is needed or not,
+                        and know what medicine you have to take, and get you one too!
+                        Join our community, and help others and benefit!
+                    </p>
+                </div>
+            </div>
+        </div>
+
+         <div th:include="fragments :: footer"> <!-- Footer --></div>
+    </body>
+</html>

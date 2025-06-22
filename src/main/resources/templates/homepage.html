@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+
+    <div th:insert="fragments :: header"> Header </div>
+
+     <!-- Body of the home -->
+    <div class="container mt-4">
+        <div class="row">
+             Welcome section 
+            <div class="col-md-12">
+                <div>
+                    <img src="/assets/home_background.jpg" alt="home_background" class="img-fluid"/>  background image 
+                </div>
+                <div>
+                    <p>
+                        Welcome To carepoint!
+                        Here where you can find your medicine and medical instruments.
+                        Get started from here ->
+                    </p>
+                    <form th:action="@{/users/signup}" method="get">
+                        <button type="submit" class="btn btn-primary">Register</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+         <!-- Medicine Section -->
+        <div class="row mt-4">
+            <div class="col-md-12" th:if="${medicines} != null">
+                <div class="col-md-12" th:each="medicine : ${medicines}">
+                    <div th:if="${param.logout}">
+                        <p>you have logout successfully</p>
+                    </div>
+                    <h3>Some Medicines</h3>
+                    <div class="row">  <!-- This should be 3 cards beside each other the info retrieve from database -->
+                        <div class="col-md-4">
+                            <div class="card">
+                                <img src="@{${medicine.imagePath}}" alt="medicine image" class="card-img-top">  <!-- import from database -->
+                                <div class="card-body">
+                                    <h4 class="card-title" th:text="${medicine.name}"></h4>  <!-- Name of the medicine --> 
+                                    <p class="card-text" th:txt="${medicine.description}"></p>  <!-- Description of the medicine -->
+                                    <p><strong>Owner:</strong></p><p th:text="${medicine.member.username}"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12" th:if="${medicines} == null">
+                <div class="col-md-12">
+                    <h3>Some Medicines</h3>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card">
+                                <img src="/assets/default_medicine.jpg" alt="default_medicine" class="card-img-top">
+                                <div class="card-body">
+                                    <h4 class="card-title">Default Medicine</h4>
+                                    <p class="card-text">Till now, there is no medicine in the database</p>
+                                    <p><strong>Owner:</strong> this is a default medicien</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            
+        </div>
+
+        <!-- Medical Instruments Section -->
+        <div class="row mt-4">
+            <div class="col-md-12" th:if="${medicals} != null">
+                <div class="col-md-12" th:each="medical : ${medicals}">
+                    <h3>Some Medical Instruments</h3>
+                    <div class="row">  <!-- This should be 3 cards beside each other the info retrieve from database -->
+                        <div class="col-md-4">
+                            <div class="card">
+                                <img src="@{${medical.imagePath}}" alt="medical instrument image" class="card-img-top">  <!-- import from database --> 
+                                <div class="card-body">
+                                    <h4 class="card-title" th:text="${medical.name}"></h4>  <!-- Name of the medical instrument -->
+                                    <p class="card-text" th:text="${medical.description}"></p>  <!-- Description of the medical instrument -->
+                                    <p><strong>Owner:</strong></p><p th:text="${medical.member.username}"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${medicals} == null">
+                <div class="col-md-12">
+                    <h3>Some Medical Instruments</h3>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card">
+                                <img src="/assets/default_medical.jpeg" alt="default_instrument" class="card-img-top">
+                                <div class="card-body">
+                                    <h4 class="card-title">Default Medical Instrument</h4>
+                                    <p class="card-text">Till now, there is no medical instrument in the databas</p>
+                                    <p><strong>Owner:</strong> this is a default medical instrument</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    <div th:insert="fragments :: footer"> <!-- Footer --> </div>
+</body>
+</html>

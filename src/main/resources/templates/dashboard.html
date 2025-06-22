@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome Admin</title>
+    <style>
+        :root {
+    /* CSS variables set dynamically by Thymeleaf inline style */
+    --percentage-member: 0;
+    --percentage-pharmacist: 0;
+  }
+        body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f9fafb;
+    color: #111827;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 32px;
+  }
+        .pie-chart-container {
+    position: relative;
+    width: 280px;
+    height: 280px;
+  }
+        .pie-chart {
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background:
+      conic-gradient(
+        #3b82f6 0% calc(var(--percentage-member)*1%),
+        #10b981 calc(var(--percentage-member)*1%) 100%
+      );
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  }
+         .slice-hover {
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    top: 0;
+    cursor: pointer;
+  }
+        .slice-member {
+    left: 0;
+    clip-path: polygon(0 0, 100% 0, 50% 50%, 100% 100%, 0 100%);
+  }
+  .slice-pharmacist {
+    right: 0;
+    clip-path: polygon(100% 0, 100% 100%, 50% 50%, 0 100%, 0 0);
+  }
+         .tooltip {
+    position: absolute;
+    top: 50%;
+    width: 140px;
+    padding: 8px 12px;
+    background-color: #1f2937;
+    color: white;
+    font-weight: 700;
+    border-radius: 8px;
+    text-align: center;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-50%) translateX(-50%);
+    transition: opacity 0.3s ease;
+    z-index: 10;
+    user-select: none;
+  }
+         .tooltip::after {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -6px;
+    border-width: 6px;
+    border-style: solid;
+    border-color: transparent transparent #1f2937 transparent;
+  }
+         .tooltip-member {
+    left: 25%;
+  }
+  .tooltip-pharmacist {
+    left: 75%;
+  }
+         .slice-member:hover + .tooltip-member,
+  .slice-member:focus + .tooltip-member,
+  .slice-pharmacist:hover + .tooltip-pharmacist,
+  .slice-pharmacist:focus + .tooltip-pharmacist {
+    opacity: 1;
+    pointer-events: auto;
+  }
+         .slice-member:focus,
+  .slice-pharmacist:focus {
+    outline: 3px solid #2563eb;
+    outline-offset: 2px;
+  }
+         .legend {
+    margin-top: 32px;
+    display: flex;
+    justify-content: center;
+    gap: 48px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+  }
+         .color-box {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+  .color-member {
+    background-color: #3b82f6;
+  }
+  .color-pharmacist {
+    background-color: #10b981;
+  }
+        .visually-hidden {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    border: 0;
+  }
+    </style>
+</head>
+<body>
+<!-- this is a right nav bar -->
+<div>
+    <ul>
+        <li>
+            <a href="@{/admin/medi">Medicines and Medicals</a>
+        </li>
+        <li>
+            <a href="@{/admin/volunteer}">Volunteers Requested</a>
+        </li>
+    </ul>
+</div>
+
+<div>
+    <!-- Here should be some statistics in the rest of the page -->
+
+    <section aria-label="User role distribution pie chart"
+             th:style="'--percentage-member: ' + ${memberPercent} + '; --percentage-pharmacist: ' + ${pharmacistPercent} + ';'">
+        <div class="pie-chart-container" role="img" aria-describedby="pieChartDesc">
+            <div class="pie-chart"></div>
+            <button class="slice-hover slice-member" aria-describedby="memberTooltip" tabindex="0"></button>
+            <div role="tooltip" id="memberTooltip" class="tooltip tooltip-member" th:text="'Members: ' + ${memberPercent} + '%'">Members: 0%</div>
+            <button class="slice-hover slice-pharmacist" aria-describedby="pharmacistTooltip" tabindex="0"></button>
+            <div role="tooltip" id="pharmacistTooltip" class="tooltip tooltip-pharmacist" th:text="'Pharmacists: ' + ${pharmacistPercent} + '%'">Pharmacists: 0%</div>
+        </div>
+        <p id="pieChartDesc" class="visually-hidden">
+            Pie chart showing user role distribution: Members and Pharmacists.
+        </p>
+        <div class="legend" aria-label="Legend for user roles">
+            <div class="legend-item">
+                <div class="color-box color-member" aria-hidden="true"></div> Members
+            </div>
+            <div class="legend-item">
+                <div class="color-box color-pharmacist" aria-hidden="true"></div> Pharmacists
+            </div>
+        </div>
+    </section>
+</div>
+
+</body>
+</html>

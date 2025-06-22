@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Common Fragments</title>
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    
+    </head>
+    <body>
+        <!-- My header-->
+        <header th:fragment="header">
+            <nav>
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-md-2">
+                             <!-- logo -->
+                            <img src="/assets/Logo.webp" alt="Logo" class="img-fluid"/>
+                        </div>
+                        <div class="col-md-10">
+                             <!-- Other things -->
+                            <ul class="nav">
+                                <li class="nav-item"><a style="color: blue;" th:href="@{/home}">Home</a></li>
+                                <li class="nav-item"><a style="color: blue;" th:href="@{/medicine}">Medicine</a></li>
+                                <li class="nav-item"><a style="color: blue;" th:href="@{/medical}">Medical instruments</a></li>
+                                <li class="nav-item"><a style="color: blue;" th:href="@{/about}">Who are we?</a></li>  
+                            </ul>
+                            <div th:if="${!user.isPresent()}">
+                                <a style="color: blue;" th:href="@{/users/signup}">Sign Up</a>
+                            </div>
+                            <div th:if="${user.isPresent()}">
+                                <div>
+                                    <img src="@{${user.imagePath != null} ? ${user.imagePath} : @{/assets/account.png}}" alt="profile image" style="width: 40px; height: 40px; border-radius: 50%;">
+                                    <div style="display: block;">
+                                        <a style="color: blue;" th:href="@{/profile}">Profile</a>
+                                        <a style="color: blue;" th:href="@{/myrequest}">my request</a>
+                                        <div th:if="${user.role} == Roles.PHARMACIST">
+                                            <a style="color: blue;" th:href="@{/pharmacist/validation}">request-validation</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <!-- My footer -->
+        <footer th:fragment="footer">
+            <div style="background-color: #003366; color: white; padding: 20px ;">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-md-2" style="width: 59%;">
+                            <img src="/assets/Logo.webp" alt="Logo" class="img-fluid"/> <!-- Logo image  --> 
+                        </div>
+                        <div class="col-md-5">
+                            <h5>Carepoint</h5>
+                            <p>
+                                Find your medicine and medical instruments all in here! If you don't know what
+                                the doctor gave you, connect with our Volunteers to assess you!
+                            </p>
+                        </div>
+                        <div>
+                            <div class="col-md-9">
+                                <h5>Contact Us</h5>
+                                <p>
+                                <strong>Address:</strong> address example<br>
+                                <strong>Phone:</strong> 81 760 881<br>
+                                <strong>Email:</strong> example@gmail.com
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </footer>
+    </body>
+</html>
