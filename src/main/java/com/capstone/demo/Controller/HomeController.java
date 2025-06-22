@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +26,7 @@ import com.capstone.demo.Service.MedicineService;
 import com.capstone.demo.Service.MemberService;
 
 import javax.swing.text.html.Option;
+
 
 @Controller
 public class HomeController {
@@ -73,6 +75,7 @@ public class HomeController {
     }
 
     // navigating to profile page
+    @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
     @GetMapping("/profile")
     public String profile(@RequestParam("member_id") Long id, @RequestParam(required = false) Boolean edit,
             Model model) {
@@ -84,6 +87,7 @@ public class HomeController {
     }
 
     // profile editting mode
+    @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST)")
     @PostMapping("/profile/edit")
     public String editProfile(@RequestParam("member_id") Long id, @RequestParam String username,
             @RequestParam String password, @RequestParam long phoneNumber) {
@@ -106,6 +110,7 @@ public class HomeController {
     }
 
     // upload the image/update it
+    @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
     @PostMapping("/memberimg")
     public String uploadImage(@RequestParam("image") MultipartFile image, @RequestParam("id") UUID id) {
         try {
@@ -117,6 +122,7 @@ public class HomeController {
     }
 
     // navigating to volunteer request page to request to be a volunteer
+    @PreAuthorize("hasAnyAuthority('MEMBER')")
     @GetMapping("/volunteering")
     public String volunteering(@RequestParam("member_id") Long id, Model model) {
         MemberModel member = memberService.findById(id);
@@ -125,6 +131,7 @@ public class HomeController {
     }
 
     //volunteer form
+    @PreAuthorize("hasAnyAuthority('MEMBER')")
     @PostMapping("/{id}/volunteer")
     public String volunteer(@PathVariable Long id, @RequestParam("certificant_date")Date certificantDate, @RequestParam("syndicate_id") String syndicateId) {
         memberService.updatePending(id, certificantDate, syndicateId);
@@ -132,6 +139,7 @@ public class HomeController {
     }
 
     // navigating to the adding new donation form
+    @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
     @GetMapping("/donation")
     public String addNewDonation(@RequestParam("member_id") Long id, Model model) {
         model.addAttribute("id", id);
@@ -139,6 +147,7 @@ public class HomeController {
     }
 
     //form method
+    @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
     @PostMapping("/new-donation")
     public String addDonation(@RequestParam("member_id") Long id, @RequestParam("type") String type,
             @RequestParam("name") String name, @RequestParam("description") String description,
@@ -158,6 +167,7 @@ public class HomeController {
     }
 
     // go to my_request page:
+    @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
     @GetMapping("/myrequest")
     public String myRequest(@RequestParam("member_id") Long id, Model model) {
         MemberModel member = memberService.findById(id);
@@ -182,6 +192,7 @@ public class HomeController {
     }
 
     //shows only the medicals in my_request
+    @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
     @GetMapping("/mymedical")
     public String myMedical(Model model, @RequestParam("member_id") Long id) {
         MemberModel member = memberService.findById(id);
@@ -191,6 +202,7 @@ public class HomeController {
     }
 
     //shows only the medicines in my_request
+    @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
     @GetMapping("/mymedicine")
     public String myMedicine(Model model, @RequestParam("member_id") Long id) {
         MemberModel member = memberService.findById(id);

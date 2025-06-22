@@ -10,6 +10,7 @@ import java.util.UUID;
 import com.capstone.demo.Enum.RequestVolunteer;
 import com.capstone.demo.Enum.Roles;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,9 +26,14 @@ public class MemberService {
     @Autowired
     private MemberRepository memberRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+
     // create member (test it when done with login)
     public MemberModel createMember(String username, String password, long phoneNumber) {
-        MemberModel member = new MemberModel(username, password, phoneNumber, Roles.MEMEBR);
+        String encodePassword = passwordEncoder.encode(password);
+        MemberModel member = new MemberModel(username, encodePassword, phoneNumber, Roles.MEMEBR);
         member = memberRepository.save(member);
         return member;
     }
@@ -62,7 +68,8 @@ public class MemberService {
     // updating the member
     public MemberModel updateMember(Long id, String username, long phoneNumber, String password) {
         MemberModel member = memberRepository.findMemberById(id);
-        member.setPassword(password);
+        String encodePassword = passwordEncoder.encode(password);
+        member.setPassword(encodePassword);
         member.setPhoneNumber(phoneNumber);
         member.setUsername(username);
         memberRepository.save(member);
