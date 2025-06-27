@@ -22,8 +22,53 @@ public class MemberModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
+
     private String username;
+
+    private String password;
+
+    private String email;
+
+    private long phoneNumber;
+
+    private String address;
+
+    @Enumerated(EnumType.STRING)
+    private Roles role;
+
+    @Enumerated(EnumType.STRING)
+    private RequestVolunteer request;
+
+    @OneToMany(mappedBy = "donor")
+    private List<MedicineModel> medicines;
+
+    @OneToMany(mappedBy = "donor")
+    private List<MedicalModel> medicals;
+
+    private Long licenseNumber;
+
+    private String currentWork;
+
+
+
+    //setters and getters
+
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     public Long getId() {
         return id;
@@ -55,14 +100,6 @@ public class MemberModel {
 
     public void setPhoneNumber(long phoneNumber) {
         this.phoneNumber = phoneNumber;
-    }
-
-    public String getImagePath() {
-        return imagePath;
-    }
-
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
     }
 
     public Roles getRole() {
@@ -101,47 +138,31 @@ public class MemberModel {
         this.request = request;
     }
 
-    private String password;
-    private long phoneNumber;
-    private String imagePath;
-
-    @Enumerated(EnumType.STRING)
-    private Roles role;
-
-    @Enumerated(EnumType.STRING)
-    private RequestVolunteer request;
-
-
-    @OneToMany(mappedBy = "member")
-    private List<MedicineModel> medicines;
-
-    @OneToMany(mappedBy = "member")
-    private List<MedicalModel> medicals;
-
-    private Date volunteerCertificantDate;
-
-    private String volunteerSyndicateId;
-
-    public Date getVolunteerCertificantDate() {
-        return volunteerCertificantDate;
+    public Long getLicenseNumber() {
+        return licenseNumber;
     }
 
-    public void setVolunteerCertificantDate(Date volunteerCertificantDate) {
-        this.volunteerCertificantDate = volunteerCertificantDate;
+    public void setLicenseNumber(Long licenseNumber) {
+        this.licenseNumber = licenseNumber;
     }
 
-    public String getVolunteerSyndicateId() {
-        return volunteerSyndicateId;
+    public String getCurrentWork() {
+        return currentWork;
     }
 
-    public void setVolunteerSyndicateId(String volunteerSyndicateId) {
-        this.volunteerSyndicateId = volunteerSyndicateId;
+    public void setCurrentWork(String currentWork) {
+        this.currentWork = currentWork;
     }
 
-    public MemberModel(String username, String password, long phoneNumber, Roles role) {
+    //default constructor
+    public MemberModel() {
+    }
+
+    //constructor
+    public MemberModel(String username, String password, String email, Roles role) {
         this.username = username;
         this.password = password;
-        this.phoneNumber = phoneNumber;
+        this.email = email;
         this.role = role;
     }
 }

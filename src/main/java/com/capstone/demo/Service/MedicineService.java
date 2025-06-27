@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.capstone.demo.Enum.RequestResult;
 import com.capstone.demo.Model.MedicalModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,15 +20,16 @@ import com.capstone.demo.Repository.MedicineRepository;
 @Service
 public class MedicineService {
 
-    private final String uploadDir = "uploaded/medicine";
+    private final String uploadDir = "C:\\Users\\Lenovo\\Documents\\Mariam Folder\\Capstone\\carepoint\\project\\demo\\uploaded";
     @Autowired
     private MedicineRepository medicineRepository;
 
     // create new medicine (test it when finsih the profile)
-    public MedicineModel createMedicine(String name, String description, MemberModel member, MultipartFile image)
+    public MedicineModel createMedicine(String name, long quantity, MultipartFile item_image, MultipartFile date_image, MemberModel donor)
             throws IOException {
-        MedicineModel medicine = new MedicineModel(name, description, member);
-        medicine = uploadImage(image, medicine);
+        MedicineModel medicine = new MedicineModel(name, quantity, donor, RequestResult.PENDING);
+        medicine = uploadImage(item_image, medicine, "item");
+        medicine = uploadImage(date_image, medicine, "date");
         medicine = medicineRepository.save(medicine);
         return medicine;
     }
@@ -53,11 +55,23 @@ public class MedicineService {
     }
 
     // uploading the image + updating the medicine (test later)
-    public MedicineModel uploadImage(MultipartFile file, MedicineModel medicine) throws IOException {
+    public MedicineModel uploadImage(MultipartFile file, MedicineModel medicine, String what) throws IOException {
+        //ensure the upload directory exists
+        File uploadDirFile = new File(uploadDir);
+        if(!uploadDirFile.exists()){
+            uploadDirFile.mkdirs();
+        }
+        //construct the file path
         String filePath = uploadDir + file.getOriginalFilename();
+        // save the file
         file.transferTo(new File(filePath));
-
-        medicine.setImagePath(filePath);
+        //update the medicine
+        if(what.equals("item")){
+            medicine.setItem_image(filePath);
+        }
+        else{
+            medicine.setDate_image(filePath);
+        }
         return medicine;
     }
 
@@ -77,7 +91,7 @@ public class MedicineService {
         List<MedicineModel> medicinesRequested = new ArrayList<>();
         int i = 0;
         while (i <= medicines.size()) {
-            if (medicines.get(i).getMemberToGet() == curentMember) {
+            if (medicines.get(i).getRequester() == curentMember) {
                 medicinesRequested.add(medicines.get(i));
             }
             i++;

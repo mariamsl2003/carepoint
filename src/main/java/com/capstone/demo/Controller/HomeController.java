@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.capstone.demo.Config.SecurityConfig;
+import com.capstone.demo.Config.UserInfoDetails;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -33,6 +37,7 @@ public class HomeController {
 
     //for member
 
+    private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
     @Autowired
     MedicalService medicalService;
 
@@ -44,41 +49,35 @@ public class HomeController {
 
     // displaying home page
     @GetMapping("/home")
-    public String homePage(Model model) {
-        authenticate(model);
+    public String homePage() {
+        //checking the principal type just for the error handling
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = auth.getPrincipal();
+        System.out.println("Principal type: " + principal.getClass().getName());
+
         return "homepage";
     }
 
     // displaying about page
     @GetMapping("/about")
-    public String about(Model model) {
-        authenticate(model);
+    public String about() {
         return "about";
     }
 
-    // returning the random medicals
-    @GetMapping("/medical")
-    public String medical(Model model) {
-        List<MedicalModel> medicals = medicalService.getThreeRandomMedical();
-        model.addAttribute("medicals", medicals);
-        authenticate(model);
-        return "homepage";
-    }
-
-    // returning the random medicines
-    @GetMapping("/medicine")
-    public String medicine(Model model) {
-        List<MedicineModel> medicines = medicineService.getThreeRandomMedicine();
-        model.addAttribute("medicines", medicines);
-        authenticate(model);
-        return "homepage";
+    //navigating to the request page to request new medicine or medical
+    @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
+    @GetMapping("/request")
+    public String request(){
+        //need some changes
+        return "request";
     }
 
     // navigating to profile page
     @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
     @GetMapping("/profile")
-    public String profile(@RequestParam("member_id") Long id, @RequestParam(required = false) Boolean edit,
+    public String profile(@RequestParam(required = false) Boolean edit,
             Model model) {
+        Long id = retrieving();
         MemberModel member = memberService.findById(id);
         model.addAttribute("user", member);
         authenticate(model);
@@ -89,9 +88,10 @@ public class HomeController {
     // profile editting mode
     @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST)")
     @PostMapping("/profile/edit")
-    public String editProfile(@RequestParam("member_id") Long id, @RequestParam String username,
-            @RequestParam String password, @RequestParam long phoneNumber) {
-        memberService.updateMember(id, username, phoneNumber, password);
+    public String editProfile(@RequestParam String username,
+            @RequestParam String password, @RequestParam long phoneNumber, @RequestParam String email) {
+        Long id = retrieving();
+        memberService.updateMember(id, username, email, phoneNumber, password);
         return "redirect:/profile?member_id=" + id;
     }
 
@@ -109,67 +109,78 @@ public class HomeController {
         model.addAttribute("header", "fragments/header :: header");
     }
 
-    // upload the image/update it
-    @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
-    @PostMapping("/memberimg")
-    public String uploadImage(@RequestParam("image") MultipartFile image, @RequestParam("id") UUID id) {
-        try {
-            memberService.uploadImage(image, id);
-            return "image successfully uploaded";
-        } catch (Exception e) {
-            return "error uploading the image:" + e.getMessage();
-        }
+    //retrieving the id
+    private Long retrieving (){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        UserInfoDetails userDetails = (UserInfoDetails) auth.getPrincipal();
+        return userDetails.getMemberId();
     }
 
     // navigating to volunteer request page to request to be a volunteer
     @PreAuthorize("hasAnyAuthority('MEMBER')")
     @GetMapping("/volunteering")
-    public String volunteering(@RequestParam("member_id") Long id, Model model) {
+    public String volunteering(Model model) {
+        Long id = retrieving();
         MemberModel member = memberService.findById(id);
+        if(member == null){
+            logger.info("member is null and passed null");
+        }
         model.addAttribute("member", member);
         return "volunteer";
     }
 
     //volunteer form
     @PreAuthorize("hasAnyAuthority('MEMBER')")
-    @PostMapping("/{id}/volunteer")
-    public String volunteer(@PathVariable Long id, @RequestParam("certificant_date")Date certificantDate, @RequestParam("syndicate_id") String syndicateId) {
-        memberService.updatePending(id, certificantDate, syndicateId);
-        return "redirect:/profile";
+    @PostMapping("/volunteer")
+    public String volunteer(@RequestParam("licenseNumber")Long licenseNumber,
+                            @RequestParam("currentWork") String currentWork,
+                            Model model) {
+        Long id = retrieving();
+        memberService.updatePending(id, licenseNumber, currentWork);
+        model.addAttribute("successfulMessage", "Form Submitted Successfully");
+        return "volunteer";
     }
 
-    // navigating to the adding new donation form
+    // navigating to the donation page
     @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
     @GetMapping("/donation")
-    public String addNewDonation(@RequestParam("member_id") Long id, Model model) {
-        model.addAttribute("id", id);
+    public String addNewDonation(Model model) {
+        Long id = retrieving();
+        MemberModel member = memberService.findById(id);
+        if(member == null){
+            logger.info("member is null and pasted null");
+        }
+        model.addAttribute("member", member);
         return "new_donation";
     }
 
     //form method
     @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
     @PostMapping("/new-donation")
-    public String addDonation(@RequestParam("member_id") Long id, @RequestParam("type") String type,
-            @RequestParam("name") String name, @RequestParam("description") String description,
-            @RequestParam("image") MultipartFile image) throws IOException {
-        MemberModel member = memberService.findById(id);
-        switch (type) {
-            case "medicine":
-                medicineService.createMedicine(name, description, member, image);
-                break;
+    public String addDonation(@RequestParam("name") String name,
+                              @RequestParam("quantity") long quantity, @RequestParam("category") String category,
+                              @RequestParam("item_image") MultipartFile item_image, @RequestParam("date_image") MultipartFile date_image,
+                              Model model) throws IOException {
 
-            case "medical-supplies":
-                medicalService.createMedical(name, description, member, image);
-                break;
+        Long id = retrieving();
+        MemberModel donor = memberService.findById(id);
+
+        if(category.equals("Medicines")){
+            MedicineModel medicine = medicineService.createMedicine(name, quantity, item_image, date_image, donor);
         }
 
-        return "redirect:/profile";
+        else{
+            MedicalModel medical = medicalService.createMedical(name, quantity, item_image, date_image, donor);
+        }
+        model.addAttribute("successfulMessage", "Form Submitted Successfully");
+        return "new_donation";
     }
 
     // go to my_request page:
     @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
     @GetMapping("/myrequest")
-    public String myRequest(@RequestParam("member_id") Long id, Model model) {
+    public String myRequest(Model model) {
+        Long id = retrieving();
         MemberModel member = memberService.findById(id);
         List<MedicineModel> medicines = medicineService.getRequestedMedicine(member);
         List<MedicalModel> medicals = medicalService.getRequestedMedical(member);
@@ -194,7 +205,8 @@ public class HomeController {
     //shows only the medicals in my_request
     @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
     @GetMapping("/mymedical")
-    public String myMedical(Model model, @RequestParam("member_id") Long id) {
+    public String myMedical(Model model) {
+        Long id = retrieving();
         MemberModel member = memberService.findById(id);
         List<MedicalModel> medicals = medicalService.getRequestedMedical(member);
         model.addAttribute("medicals", medicals);
@@ -204,27 +216,12 @@ public class HomeController {
     //shows only the medicines in my_request
     @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
     @GetMapping("/mymedicine")
-    public String myMedicine(Model model, @RequestParam("member_id") Long id) {
+    public String myMedicine(Model model) {
+        Long id =retrieving();
         MemberModel member = memberService.findById(id);
         List<MedicineModel> medicines = medicineService.getRequestedMedicine(member);
         model.addAttribute("medicines", medicines);
         return "redirect:/my_request";
-    }
-
-
-    // still need to have cards info page that shows us the validation button inside it
-
-    @GetMapping("/cards")
-    public String cardsInfo(@RequestParam("member_id") Long id, Model model){
-        if (medicalService.getMedicalById(id).isPresent()) {
-            Optional<MedicalModel> medical = medicalService.getMedicalById(id);
-            model.addAttribute("med", medical);
-        } else {
-            Optional<MedicineModel> medicine = medicineService.getMedicineById(id);
-            model.addAttribute("med", medicine);
-        }
-
-        return "cards_info";
     }
 
 }

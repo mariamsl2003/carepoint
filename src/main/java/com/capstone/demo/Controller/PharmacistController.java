@@ -19,7 +19,7 @@ import java.util.List;
 @RequestMapping("/pharmacist")
 public class PharmacistController {
 
-    //everything for phermacist
+    //everything for pharmacist
 
     @Autowired
     MedicineService medicineService;
