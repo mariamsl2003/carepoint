@@ -1,38 +1,132 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>About Page</title>
-        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    </head>
-    <body>
-         <div th:include="fragments :: header"> <!-- Header --> </div>
-        
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - MediLink</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script th:src="@{/scripts.js}" defer></script>
+    <style>
+        body {
+          margin: 0;
+          background: url('images/testabout-us.png');
+          background-size: cover;
+          background-repeat: repeat;
+          font-family: 'Segoe UI', sans-serif;
+        }
 
-        <!-- Body of the about -->
+        .about-wrapper {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 100vh;
+          padding: 2rem;
+      background-color: transparent; /* ✅ Now the background image will be visible */
+    }
+
+
+        /* === Navbar === */
+        .navbar {
+          background-color: #ffffffee;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .navbar-brand img {
+          height: 40px;
+          margin-right: 10px;
+        }
+
+        .nav-link {
+          font-weight: 500;
+          color: #003B73 !important;
+          position: relative;
+          transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+          color: #126bc4 !important;
+        }
+
+        .nav-link::after {
+          content: '';
+          position: absolute;
+          width: 0;
+          height: 2px;
+          bottom: -4px;
+          left: 0;
+          background-color: #126bc4;
+          transition: width 0.3s ease;
+        }
+
+
+        .about-card {
+          background-color: white;
+          padding: 3rem;
+          border-radius: 1rem;
+          box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+          max-width: 800px;
+          width: 100%;
+          text-align: center;
+        }
+
+        .about-card h1 {
+          color: #003B73;
+          margin-bottom: 1.5rem;
+        }
+
+        .about-card p {
+          font-size: 1.1rem;
+          color: #444;
+          margin-bottom: 1rem;
+        }
+
+        .btn-home {
+          margin-top: 2rem;
+        }
+    </style>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top bg-white shadow-sm">
         <div class="container">
-            <div class="row">
-                <div class="col-md-5">
-                    <h1>Carepoint</h1>
-                    <h2>Who Are We?</h2>
-                </div>
-                <div class="col-md-7"> <!-- Adjusted to col-md-7 to fit the layout -->
-                    <p>
-                        We are your assistant to find what you need, whether it's medicine or medical instruments!
-                        <strong>
-                            Do you have medicine you don't need anymore?
-                            Or medical instruments you don't use?
-                        </strong>
-                        Here we will help you find people who need them and search for your needs too!
-                        With our professional volunteers, you will know if the medicine you have is needed or not,
-                        and know what medicine you have to take, and get you one too!
-                        Join our community, and help others and benefit!
-                    </p>
-                </div>
+            <a class="navbar-brand d-flex align-items-center" th:href="@{/home}">
+                <img th:src="@{/images/testlogo.PNG}" alt="MediLink Logo" style="height: 40px; margin-right: 10px;">
+                MediLink
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/home}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/about}">About Us</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/donation}">Donate</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/request}">Request</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/volunteering}">Join Us</a></li>
+                </ul>
+                <a th:href="@{/users/login}" class="btn btn-outline-primary me-2">Login</a>
+                <a th:href="@{/users/signup}" class="btn btn-primary">Register</a>
             </div>
         </div>
+    </nav>
 
-         <div th:include="fragments :: footer"> <!-- Footer --></div>
-    </body>
+</head>
+<body>
+<div class="about-wrapper">
+    <div class="about-card">
+        <h1>About MediLink</h1>
+        <p>
+            MediLink is a mission-driven platform built to connect donors and recipients of medical supplies across communities.
+            Our goal is to reduce waste, enhance accessibility to healthcare, and empower people to make a real difference.
+        </p>
+        <p>
+            We believe that every person deserves access to the medical resources they need. Whether you're looking to donate
+            unused medical supplies or in urgent need of support, MediLink is here to bridge that gap securely and effectively.
+        </p>
+        <p>
+            Built by a passionate team of developers and healthcare professionals, MediLink promotes compassion, transparency,
+            and verified healthcare interactions.
+        </p>
+        <a th:href="@{/home}" class="btn btn-primary btn-home">Back to Home</a>
+    </div>
+</div>
+</body>
 </html>

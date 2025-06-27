@@ -1,43 +1,205 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Medicine Page</title>
-    </head>
-    <body>
-        <!-- Header -->
-         <div th:insert="fragments :: header"></div>
-        
-        <!-- main content -->
-         <div>
-            <form action="/new-donation" method="post">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Donate | MediLink</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+       margin: 0;
+       font-family: 'Segoe UI', sans-serif;
+       background-color: #e3d8c4;
+     }
 
-                <input type="hidden" name="member_id" value="${id}">
 
-                <label for="type">Type</label>
-                <select id="type" name="type">
-                    <option value="medicine">Medicine</option>
-                    <option value="medical-supplies">Medical Supplies</option>
-                </select>
 
-                <label for="image">Upload Photo</label>
-                <input type="file" id="image" name="image" accept="image/*" required>
+         /* === Navbar === */
+         .navbar {
+           background-color: #ffffffee;
+           box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+         }
 
-                <label for="name">Name</label>
-                <input id="name" name="name" required>
+         .navbar-brand img {
+           height: 40px;
+           margin-right: 10px;
+         }
 
-                <label for="description">Description</label>
-                <input id="description" name="description" required>
+         .nav-link {
+           font-weight: 500;
+           color: #003B73 !important;
+           position: relative;
+           transition: color 0.3s ease;
+         }
 
-                <button type="submit">Submit</button>
+         .nav-link:hover {
+           color: #126bc4 !important;
+         }
 
+         .nav-link::after {
+           content: '';
+           position: absolute;
+           width: 0;
+           height: 2px;
+           bottom: -4px;
+           left: 0;
+           background-color: #126bc4;
+           transition: width 0.3s ease;
+         }
+        .donate-hero {
+       background: url('images/donations.png') center center no-repeat;
+       background-size: cover;                /* fill the whole section */
+       min-height: 40vh;                     /* full screen height */
+       display: flex;
+       align-items: flex-end;                 /* push content to bottom */
+       justify-content: flex-start;
+       text-align: left;
+       padding-top: 0rem !important;
+     padding-bottom: 0rem;
+       color: rgb(0, 0, 0);
+       font-weight: bold;
+       position: relative;
+     }
+
+     .donation-form.py-5 {
+     padding-top: 0rem !important;
+     padding-bottom: 0rem;
+     }
+         .donation-form .card {
+           border-radius: 2rem;
+           border: none;
+           padding-top: 0rem;
+         }
+
+         .donation-form .form-label {
+           font-weight: 500;
+           padding-top: 0rem !important;
+         }
+
+         .donation-form textarea,
+         .donation-form input,
+         .donation-form select {
+           border-radius: 0.5rem;
+         }
+
+         .btn-primary {
+           background-color: #003B73;
+           border: none;
+         }
+
+         .btn-primary:hover {
+           background-color: #00509E;
+         }
+
+         footer {
+           background-color: #005c73;
+         }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light fixed-top">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" th:href="@{#}">
+            <img th:src="@{images/testlogo.png}" alt="MediLink Logo">
+            MediLink
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item"><a class="nav-link" th:href="@{/home}">Home</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/about}">About Us</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/donation}">Donate</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/request}">Request</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/volunteering}">Join Us</a></li>
+            </ul>
+            <a th:href="@{/users/login}" class="btn btn-outline-primary me-2">Login</a>
+            <a th:href="@{/users/signup}" class="btn btn-primary">Register</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero -->
+<section class="donate-hero">
+    <div class="container">
+    </div>
+</section>
+
+<!-- Form Section -->
+<section class="donation-form py-5">
+    <div class="container">
+        <div class="card shadow-sm p-4">
+            <div th:if="${successfulMessage}" class="alert alert-success" th:text="${successfulMessage}"></div>
+            <h2 class="mb-4 text-primary">Donation Form</h2>
+            <form th:action="@{/new-donation}" method="post" enctype="multipart/form-data">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Donor Name</label>
+                        <input type="text" class="form-control" name="username" th:value="${member != null ? member.username : 'Default Username'}" disabled>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Phone Number</label>
+                        <input type="number" class="form-control" name="phoneNumber" th:value="${member != null ? member.phoneNumber : 'Default Phone Number'}" disabled>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-9">
+                        <label class="form-label">Item to Donate</label>
+                        <input type="text" class="form-control" name="name" placeholder="e.g., Blood Pressure Monitor" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Quantity</label>
+                        <input type="number" class="form-control" name="quantity" placeholder="minimum 1" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Category</label>
+                        <select class="form-select" name="category" required>
+                            <option selected disabled>Choose category</option>
+                            <option value="Medicines">Medicines</option>
+                            <option value="Equipment">Equipment</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Capture Item</label>
+                        <input type="file" class="form-control" name="item_image" accept="image/*" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Expired Date</label>
+                        <input type="file" class="form-control" name="date_image" accept="image/*" required>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+
+
+                    <div class="row mb-3">
+                        <div class="mb-3">
+                            <label class="form-label">Pickup Address</label>
+                            <textarea class="form-control" rows="3" th:value="${member != null ? member.address : 'Default Address'}" name="address" disabled></textarea>
+                        </div>
+
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary px-4">Submit Donation</button>
+                        </div>
+                    </div>
+                </div>
             </form>
+        </div>
+    </div>
+</section>
 
-         </div>
+<!-- Footer -->
+<footer class="text-white text-center py-4">
+    <p class="mb-1">Contact us at <a href="mailto:support@medilink.org" class="text-white text-decoration-underline">support@medilink.org</a></p>
+    <p class="mb-0">&copy; 2025 MediLink. All rights reserved.</p>
+</footer>
 
-        <!-- Footer -->
-        <div th:insert="fragments :: footer"></div>
-    </body>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>

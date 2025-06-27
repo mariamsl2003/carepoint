@@ -15,6 +15,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -40,39 +42,57 @@ public class SecurityConfig {
         http.csrf().disable() // Disable CSRF protection if not needed
                 .authorizeHttpRequests(auth -> {
                     // Allow access to these endpoints without authentication
-                    auth.requestMatchers("/","/home", "/about", "/medical", "/medicine",
-                            "/medical/medicals", "/medical/medicals/search", "/medicine/medicines",
-                            "/medicine/medicines/search", "/search",  "/cards", "/users/signup", "/users/signing").permitAll()
-                                    .requestMatchers("/profile", "/profile/edit", "/memberimg", "/volunteering",
-                                            "/{id}/volunteer", "/donation" , "/new-donation", "/myrequest", "/mymedical",
-                                            "mymedicine").authenticated()
+                    auth.requestMatchers("/","/home", "/about", "/search",
+                                    "/users/signup", "/users/signing", "/users/login", "/users/pass").permitAll()
+                                    .requestMatchers("/profile", "/profile/edit", "/volunteering",
+                                            "/volunteer", "/donation" , "/new-donation", "/myrequest", "/mymedical",
+                                            "mymedicine", "/request").authenticated()
                                     .requestMatchers("/pharmacist/validation", "/pharmacist/validate-search").authenticated()
                                     .requestMatchers("/admin/dashboard", "/admin/medi", "/admin/volunteer",
                                             "/admin/{id}/accept", "/admin/{id}/reject").hasAuthority("ADMIN");
-
-                    auth.requestMatchers("/login").permitAll();
                     // Allow all other requests without authentication
                     auth.anyRequest().permitAll();
                 })
                 .formLogin(form -> form
                         .loginPage("/users/login")
+                        .loginProcessingUrl("/users/logging")
                         .permitAll()
                         .successHandler((request, response, authentication) -> {
+                            logger.info("User  authorities: {}", SecurityContextHolder.getContext().getAuthentication().getAuthorities());
                             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                            logger.info("get to know the email");
+
+                            if (auth == null) {
+                                logger.warn("❌ Authentication object is NULL (User is not logged in)");
+                            } else if (auth.getPrincipal() == null) {
+                                logger.warn("⚠️ Authentication exists, but Principal is NULL (Possible session issue)");
+                            }
+
                             if (auth != null && auth.getPrincipal() != null) {
-                                logger.info("Authenticated user: " + auth.getName());
-                                logger.info("User roles: " + auth.getAuthorities());
+                                String email = auth.getName();
+                                logger.info("looking for user with email: {} ", auth.getName());
+                                Optional<MemberModel> member = memberRepository.findMemberByEmail(email); // Inject userRepository
+                                logger.info("looked for the user with email: {}", email);
+                                if(member.isPresent()){
+                                    MemberModel user = member.get();
+                                    request.getSession().setAttribute("loggedInUser", user);
+                                    logger.info("Authenticated user: " +user.getEmail());
+                                    logger.info("going to see the role of user: {}", user.getRole());
+                                    if (authentication.getAuthorities().stream().anyMatch(ga -> ga.getAuthority().equals("ADMIN"))) {
+                                        logger.info("here it is admin: {}", user.getRole());
+                                        response.sendRedirect("/admin/dashboard");
+                                    } else {
+                                        logger.info("here should be member or pharmacist: {}", user.getRole());
+                                        response.sendRedirect("/home");
+                                    }
+                                }
+                                else{
+                                    logger.info("user {} not found", email);
+                                }
 
-                                String username = auth.getName();
-                                Optional<MemberModel> member = memberRepository.findUserByUserName(username); // Inject userRepository
-                                member.ifPresent(user -> request.getSession().setAttribute("loggedInUser", user));
                             }
 
-                            if (authentication.getAuthorities().stream().anyMatch(ga -> ga.getAuthority().equals("ADMIN"))) {
-                                response.sendRedirect("/admin/dashboard");
-                            } else {
-                               response.sendRedirect("/home");
-                            }
+
                         })
 
 
@@ -84,10 +104,11 @@ public class SecurityConfig {
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID"))
           .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-        )
-                .build();
-
+                .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
+                  .maximumSessions(1)
+                  .expiredUrl("/users/login?expired")
+                  .sessionRegistry(sessionRegistry())
+        );
 
         return http.build();
     }
@@ -109,5 +130,9 @@ public class SecurityConfig {
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
 }
+    @Bean
+    public SessionRegistry sessionRegistry() {
+        return new SessionRegistryImpl();
+    }
 
 }

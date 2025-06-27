@@ -2,13 +2,17 @@ package com.capstone.demo.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Member;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.capstone.demo.Config.SecurityConfig;
 import com.capstone.demo.Enum.RequestVolunteer;
 import com.capstone.demo.Enum.Roles;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,18 +26,19 @@ import javax.xml.crypto.Data;
 @Service
 public class MemberService {
 
-    private final String uploadDir = "uploaded/member";
     @Autowired
     private MemberRepository memberRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    private static final Logger logger = LoggerFactory.getLogger(MemberService.class);
+
 
     // create member (test it when done with login)
-    public MemberModel createMember(String username, String password, long phoneNumber) {
+    public MemberModel createMember(String username, String email, String password) {
         String encodePassword = passwordEncoder.encode(password);
-        MemberModel member = new MemberModel(username, encodePassword, phoneNumber, Roles.MEMEBR);
+        MemberModel member = new MemberModel(username, encodePassword, email, Roles.MEMBER);
         member = memberRepository.save(member);
         return member;
     }
@@ -41,6 +46,11 @@ public class MemberService {
     // find member by username (test it when done with login)
     public Optional<MemberModel> findMemberByUserName(String username) {
         return memberRepository.findUserByUserName(username);
+    }
+
+    public Optional<MemberModel> findMemberByEmail(String email){
+        logger.info("email in service is: {}", email);
+        return memberRepository.findMemberByEmail(email);
     }
 
     // find member by id
@@ -53,25 +63,15 @@ public class MemberService {
         return memberRepository.findAll();
     }
 
-    // uploading the image + updating the medicine (test later)
-    public void uploadImage(MultipartFile file, UUID id) throws RuntimeException, IOException {
-        MemberModel member = memberRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Member not found"));
-
-        String filePath = uploadDir + file.getOriginalFilename();
-        file.transferTo(new File(filePath));
-
-        member.setImagePath(filePath);
-        memberRepository.save(member);
-    }
 
     // updating the member
-    public MemberModel updateMember(Long id, String username, long phoneNumber, String password) {
+    public MemberModel updateMember(Long id, String username, String email, long phoneNumber, String password) {
         MemberModel member = memberRepository.findMemberById(id);
         String encodePassword = passwordEncoder.encode(password);
         member.setPassword(encodePassword);
         member.setPhoneNumber(phoneNumber);
         member.setUsername(username);
+        member.setEmail(email);
         memberRepository.save(member);
         return member;
     }
@@ -97,11 +97,13 @@ public class MemberService {
     }
 
     //update volunteer to be requested
-    public void updatePending(Long id, Date certificantDate, String syndicateId){
+    public void updatePending(Long id, Long licenseNumber, String currentWork){
         MemberModel member = memberRepository.findMemberById(id);
         member.setRequest(RequestVolunteer.PENDING);
-        member.setVolunteerCertificantDate(certificantDate);
-        member.setVolunteerSyndicateId(syndicateId);
+        member.setLicenseNumber(licenseNumber);
+        member.setCurrentWork(currentWork);
         memberRepository.save(member);
     }
+
+
 }

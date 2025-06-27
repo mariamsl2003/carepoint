@@ -1,12 +1,7 @@
 package com.capstone.demo.Enum;
 
 public enum Roles {
-    MEMEBR,
+    MEMBER,
     PHARMACIST,
     ADMIN;
-
-
-    public String[] split(String s) {
-        return new String[]{"[MEMBER , PHARMACIST, ADMIN]"};
-    }
 }

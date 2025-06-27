@@ -1,28 +1,154 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Log In</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MediLink Login</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <style>
+        body {
+          font-family: 'Poppins', sans-serif;
+          background-color: #eaf6fc;
+          min-height: 100vh;
+          overflow-x: hidden;
+        }
+
+        .form-control {
+          border-radius: 12px;
+        }
+
+        .form-control:focus {
+          box-shadow: none;
+          border-color: #003B73;
+        }
+
+        .btn-primary {
+          background-color: #003B73;
+          border: none;
+        }
+
+        .btn-primary:hover {
+          background-color: #00509E;
+        }
+
+        .toggle-password {
+          cursor: pointer;
+        }
+
+        .line hr {
+          border: 1px solid #ccc;
+        }
+
+        .logo svg {
+          fill: #888;
+          transition: 0.3s ease;
+        }
+
+        .logo svg:hover {
+          fill: #00509E;
+        }
+
+        .text-primary {
+          color: #003B73 !important;
+        }
+
+        .form-section {
+          padding: 3rem 2rem;
+        }
+
+        .form-section h2 {
+          font-style: italic;
+        }
+
+        .exit-btn {
+          position: absolute;
+          top: 20px;
+          right: 30px;
+          font-size: 2rem;
+          text-decoration: none;
+          color: #333;
+        }
+
+        .exit-btn:hover {
+          color: #000;
+        }
+    </style>
 </head>
 <body>
-<div>
-    <h1> Welcome back!</h1>
-    <h2> you thought you can live without us? hehehhehehe</h2>
-</div>
-<div>
-    <form th:action="@{users/logging}" method="post">
-        <label for="username">Username</label>
-        <input id="username" name="username" required>
 
-        <label for="password">Password</label>
-        <input id="password" name="password" required>
+<!-- Login Section -->
+<section id="form1" class="form-section">
+    <div class="container-fluid">
+        <div class="row justify-content-evenly align-items-center">
+            <div class="offset-lg-1 col-lg-4 text-center position-relative">
+                <a th:href="@{/home}" class="exit-btn" title="Exit">&times;</a>
+                <img th:src="@{/images/testlogo.png}" alt="MediLink Logo" class="img-fluid" style="max-height: 80px;" />
+                <h2 class="text-primary mt-4">Login into account</h2>
+                <p class="my-3">Please enter your email & password to sign in.</p>
 
-        <button type="submit"> Log In </button>
-    </form>
+                <form th:action="@{/users/logging}" method="post">
+                    <div class="mb-4 position-relative">
+                        <input type="email" class="form-control px-5 py-3 shadow-sm" placeholder="Email Address" name="username" required>
+                        <svg class="position-absolute top-50 start-0 translate-middle-y ms-3 opacity-50" width="22" height="22">
+                            <use th:href="@{#letter}" />
+                        </svg>
+                    </div>
+                    <div class="mb-4 position-relative">
+                        <input id="password-field" type="password" class="form-control px-5 py-3 shadow-sm" placeholder="Password" name="password" required>
+                        <svg class="position-absolute top-50 start-0 translate-middle-y ms-3 opacity-50" width="22" height="22">
+                            <use th:href="@{#lock}" />
+                        </svg>
+                        <span toggle="#password-field" class="eye toggle-password position-absolute top-50 end-0 translate-middle-y me-3 opacity-50">
+                👁
+              </span>
+                    </div>
 
-    <div>
-        <p> Don't have account yet? please <a th:href="/users/signup">Sign up</a></p>
+                    <div class="d-flex justify-content-between mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="rememberMe">
+                            <label class="form-check-label" for="rememberMe">Remember me</label>
+                        </div>
+                        <a th:href="@{/users/pass}" class="text-primary text-decoration-none">Forgot password?</a>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary py-2">Log In</button>
+                    </div>
+                </form>
+
+                <p class="mt-3">Don’t have an account?
+                    <a th:href="@{/users/signup}" class="text-decoration-none text-primary">Register here</a>
+                </p>
+            </div>
+
+            <div class="col-lg-6 mt-5 text-center">
+                <img th:src="@{/images/billboard.png}" alt="MediLink Visual" class="img-fluid" />
+            </div>
+        </div>
     </div>
-</div>
+</section>
+
+<!-- SVG Icon Symbols (Inject just once) -->
+<svg class="d-none">
+    <!-- Your existing <symbol> tags here (letter, lock, facebook, google, twitter, etc.) -->
+</svg>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Show/hide password
+    document.querySelector('.toggle-password').addEventListener('click', function () {
+      const field = document.querySelector('#password-field');
+      const type = field.type === 'password' ? 'text' : 'password';
+      field.type = type;
+    });
+</script>
 </body>
 </html>

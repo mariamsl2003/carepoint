@@ -45,7 +45,7 @@ public class AdminController {
         long totalCount = members.size();
 
         //count members of member role
-        long memberRole = members.stream().filter(m -> m.getRole() == Roles.MEMEBR).count();
+        long memberRole = members.stream().filter(m -> m.getRole() == Roles.MEMBER).count();
 
         //count members of pharmacist role
         long pharmacistRole = members.stream().filter(m -> m.getRole() == Roles.PHARMACIST).count();
