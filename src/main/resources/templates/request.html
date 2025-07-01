@@ -214,39 +214,25 @@
     </div>
 
     <div class="row row-cols-1 row-cols-md-2 g-4">
-        <div class="col donation-card" data-name="surgical masks" data-description="unopened sealed packages" data-category="tools">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Surgical Masks</h5>
-                    <p class="card-text"><strong>Quantity:</strong> 500 pcs</p>
-                    <p class="card-text"><strong>Expires:</strong> Dec 2025</p>
-                    <p class="card-text"><strong>Location:</strong> Tripoli</p>
-                    <p class="card-text"><strong>Notes:</strong> Unopened, sealed packages.</p>
-                    <button class="btn btn-success mt-2" data-bs-toggle="modal" data-bs-target="#requestModal">Request This Item</button>
+        <div class="col donation-card">
+            <div class="card shadow-sm h-100" th:if="${medicines != null}">
+                <div class="card-body" th:each="medicine : ${medicines}" data-category="medicine" th:data-id="${medicine.id}">
+                        <img class="card-image" th:src="${medicine.item_image}">
+                        <h5 class="card-title" th:value="${medicine.name}">Surgical Masks</h5>
+                        <p class="card-text"><strong>Description:</strong> <span th:value="${medicine.description}">500 pcs</span></p>
+                        <button class="btn btn-success mt-2" th:onlcik="getSelectId(this)">Request</button>
+
                 </div>
             </div>
         </div>
-        <div class="col donation-card" data-name="wheelchair" data-description="mobility aid" data-category="tools">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Wheelchair</h5>
-                    <p class="card-text"><strong>Quantity:</strong> 2 pcs</p>
-                    <p class="card-text"><strong>Expires:</strong> Jan 2025</p>
-                    <p class="card-text"><strong>Location:</strong> Beirut</p>
-                    <p class="card-text"><strong>Notes:</strong> Unopened, sealed packages.</p>
-                    <button class="btn btn-success mt-2" data-bs-toggle="modal" data-bs-target="#requestModal">Request This Item</button>
-                </div>
-            </div>
-        </div>
-        <div class="col donation-card" data-name="pain killer" data-description="great" data-category="medicine">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Pain Killer</h5>
-                    <p class="card-text"><strong>Quantity:</strong> 2 pcs</p>
-                    <p class="card-text"><strong>Expires:</strong> Dec 2025</p>
-                    <p class="card-text"><strong>Location:</strong> Kafra</p>
-                    <p class="card-text"><strong>Notes:</strong> Great</p>
-                    <button class="btn btn-success mt-2" data-bs-toggle="modal" data-bs-target="#requestModal">Request This Item</button>
+        <div class="col donation-card">
+            <div class="card shadow-sm h-100" th:if="${medicals != null}">
+                <div class="card-body" th:each="medical : ${medicals}" data-category="tools" th:data-id="${medical.id}">
+
+                        <img class="card-image" th:src="${medical.item_image}">
+                        <h5 class="card-title" th:value="${medical.name}">Wheelchair</h5>
+                        <p class="card-text"><strong>Description</strong> <span th:value="${medical.description}">Unopened, sealed packages.</span> </p>
+                        <button class="btn btn-success mt-2" th:onclick="getSelectId(this)">Request</button>
                 </div>
             </div>
         </div>
@@ -261,23 +247,27 @@
 <!-- Request Modal -->
 <div class="modal fade" id="requestModal" tabindex="-1" aria-labelledby="requestModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <form class="modal-content">
+        <form class="modal-content" th:action="@{/request/form}" method="post">
             <div class="modal-header">
                 <h5 class="modal-title" id="requestModalLabel">Request: Item</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="mb-3">
+                    <input type="hidden" class="form-control" name="category" id="selectedCategory">
+                    <input type="hidden" class="form-control" name="id" id="selectedID"/>
+                </div>
+                <div class="mb-3">
                     <label for="quantity" class="form-label">Quantity Needed</label>
-                    <input type="number" class="form-control" id="quantity" required />
+                    <input type="number" class="form-control" name="quantity" id="quantity" required />
                 </div>
                 <div class="mb-3">
                     <label for="reason" class="form-label">Prescript / Reason</label>
-                    <input type="image" class="form-control" id="reason" required />
+                    <input type="file" class="form-control" name="prescript" id="reason" accept="image/*" required />
                 </div>
                 <div class="mb-3">
                     <label for="location" class="form-label">Your Location</label>
-                    <input type="text" class="form-control" id="location" required />
+                    <input type="text" class="form-control" name="location" th:value="${member.address}" id="location" disabled />
                 </div>
             </div>
             <div class="modal-footer">
@@ -322,6 +312,36 @@
         }
       });
     });
+
+
+
+
+Copy
+
+Download
+19 lines
+
+function getSelectId(button) {
+            const item = button.closest('li');
+            const itemId = item.getAttribute('data-id');
+            const category = item.getAttribute('data-category');
+
+            // Get the target element with the matching ID
+            const targetElement = document.getElementById(itemId);
+
+            if (targetElement) {
+                // Scroll to the element with smooth behavior
+                targetElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+
+            // Set values in hidden form fields
+            document.getElementById('selectedId').value = itemId;
+
+    return itemId;
+}
 
     function scrollToTop() {
       window.scrollTo({ top: 0, behavior: 'smooth' });

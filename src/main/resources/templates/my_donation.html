@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>MediLink - Member Profile</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Donation Page</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
@@ -97,59 +97,74 @@
     </style>
 </head>
 <body>
-
 <!-- Hamburger -->
 <button class="hamburger" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
 
-<!-- Sidebar -->
+<!-- Slide bar -->
 <div class="sidebar" id="sidebar">
-    <h4><i class="bi bi-person me-2"></i>Member Panel</h4>
-    <nav class="nav flex-column mt-4">
-        <a class="nav-link active" th:href="@{/profile}"><i class="bi bi-house-door me-2"></i>Dashboard</a>
-        <a class="nav-link" th:href="@{/mydonation}"><i class="bi bi-box me-2"></i>My Donations</a>
-        <a class="nav-link" th:href="@{/myrequest}"><i class="bi bi-inbox me-2"></i>My Requests</a>
-    </nav>
+    <div th:if="${role != null and role == T(com.capstone.demo.Enum.Roles).MEMBER}">
+        <h4><i class="bi bi-person me-2"></i>Member Panel</h4>
+        <nav class="nav flex-column mt-4">
+            <a class="nav-link active" th:href="@{/profile}"><i class="bi bi-house-door me-2"></i>Dashboard</a>
+            <a class="nav-link" th:href="@{#mainContent}"><i class="bi bi-box me-2"></i>My Donations</a>
+            <a class="nav-link" th:href="@{/myrequest}"><i class="bi bi-inbox me-2"></i>My Requests</a>
+        </nav>
+    </div>
+    <div th:if="${role != null and role == T(com.capstone.demo.Enum.Roles).PHARMACIST}">
+        <h4><i class="bi bi-person-heart me-2"></i>MediLink Volunteer</h4>
+        <nav class="nav flex-column">
+            <a class="nav-link active" th:href="@{/pharmacist/profile/#mainContent}"><i class="bi bi-house-door me-2"></i>Dashboard</a>
+            <a class="nav-link" th:href="@{/pharmacist/profile/#pendingDonations}"><i class="bi bi-clock-history me-2"></i>Pending Donations</a>
+            <a class="nav-link" th:href="@{/pharmacist/profile/#pendingRequest}"><i class="bi bi-clock-history me-2"></i>Pending Requests</a>
+            <a class="nav-link" th:href="@{#mainContent}"><i class="bi bi-clock-history me-2"></i>My Donation</a>
+            <a class="nav-link" th:href="@{/myrequest}"><i class="bi bi-person-lines-fill me-2"></i>My Request</a>
+        </nav>
+    </div>
 </div>
 
 <!-- Main Content -->
 <div class="main-content" id="mainContent">
-    <div class="container">
+    <!-- User Profile -->
+    <div th:if="${role != null and role == T(com.capstone.demo.Enum.Roles).MEMBER}">
         <div class="card text-center p-4 mb-4">
             <img src="https://bootdey.com/img/Content/avatar/avatar7.png" class="profile-img mb-3" alt="Member">
             <h5 class="fw-bold" th:text="${member.username}">Ali Hammoud</h5>
             <p class="text-muted mb-1">Member | <span th:text="${member.address}">Beirut, Lebanon</span> </p>
             <p class="text-muted" th:text="${member.email}"><i class="bi bi-envelope-fill me-2"></i>ali@example.com</p>
         </div>
-
-        <div class="card p-4 mb-4">
-            <h5 class="fw-bold mb-3"><i class="bi bi-box-seam-fill me-2"></i>My Donations</h5>
-            <ul class="list-group" id="donationList">
-                <li class="list-group-item" th:text="${count}">
-                    4 Boxes of Gloves
-                    <div>
-                        <button class="btn btn-outline-warning btn-sm me-1" onclick="editItem(this)"><i class="bi bi-pencil-fill"></i></button>
-                        <button class="btn btn-outline-danger btn-sm" onclick="deleteItem(this)"><i class="bi bi-trash-fill"></i></button>
-                    </div>
-                </li>
-            </ul>
-        </div>
-
-        <div class="card p-4 mb-4">
-            <h5 class="fw-bold mb-3"><i class="bi bi-inbox-fill me-2"></i>My Requests</h5>
-            <ul class="list-group" id="requestList">
-                        <li class="list-group-item" th:text="${reqCount}">
-                            Blood Pressure Monitor
-                            <div class="d-flex align-items-center">
-                                <button class="btn btn-outline-warning btn-sm me-1" onclick="editItem(this)"><i class="bi bi-pencil-fill"></i></button>
-                                <button class="btn btn-outline-danger btn-sm" onclick="deleteItem(this)"><i class="bi bi-trash-fill"></i></button>
-                            </div>
-                        </li>
-
-            </ul>
+    </div>
+    <div th:if="${role != null and role == T(com.capstone.demo.Enum.Roles).PHARMACIST}">
+        <div class="card p-4 mb-4 text-center">
+            <img src="https://bootdey.com/img/Content/avatar/avatar1.png" class="profile-img mb-3" alt="Volunteer">
+            <h5 class="fw-bold mb-1" th:text="${user.username}">Maya Nasser</h5>
+            <p class="text-muted">Volunteer | <span th:text="${member.currentWork}">Tripoli, Lebanon</span></p>
+            <p><i class="bi bi-envelope-fill me-2" th:text="${member.email}"></i>maya.vol@example.com</p>
         </div>
     </div>
-</div>
 
+    <!-- My Donation -->
+    <div class="card p-4 mb-4">
+        <h5 class="fw-bold mb-3"><i class="bi bi-inbox-fill me-2"></i>My Donations</h5>
+        <ul class="list-group" id="requestList" th:if="${medicines != null and medicals != null}">
+            <li class="list-group-item" th:each="medicine : ${medicines}">
+                <span th:text="${medicine.name}">Blood Pressure Monitor</span>
+                <div class="d-flex align-items-center">
+                    <span class="badge bg-warning text-dark me-2" th:text="${requested}">Pending</span>
+                    <button class="btn btn-outline-warning btn-sm me-1" onclick="editItem(this)"><i class="bi bi-pencil-fill"></i></button>
+                    <button class="btn btn-outline-danger btn-sm" onclick="deleteItem(this)"><i class="bi bi-trash-fill"></i></button>
+                </div>
+            </li>
+            <li class="list-group-item" th:each="medical : ${medicals}">
+                <span th:text="${medical.name}">Diabetes Strips</span>
+                <div class="d-flex align-items-center">
+                    <span class="badge bg-success text-white me-2" th:text="${medical.requested}">Fulfilled</span>
+                    <button class="btn btn-outline-warning btn-sm me-1" onclick="editItem(this)"><i class="bi bi-pencil-fill"></i></button>
+                    <button class="btn btn-outline-danger btn-sm" onclick="deleteItem(this)"><i class="bi bi-trash-fill"></i></button>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     function deleteItem(button) {
@@ -170,12 +185,6 @@
       }
     }
 
-    function showToast(message) {
-      document.getElementById('toastText').textContent = message;
-      const toast = new bootstrap.Toast(document.getElementById('toastMsg'));
-      toast.show();
-    }
-
     function toggleSidebar() {
       const sidebar = document.getElementById('sidebar');
       const content = document.getElementById('mainContent');
@@ -192,4 +201,5 @@
     });
 </script>
 </body>
+
 </html>

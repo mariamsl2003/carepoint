@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.capstone.demo.Enum.RequestResult;
+import com.capstone.demo.Enum.RequestToGet;
 import com.capstone.demo.Model.MedicalModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,11 +26,12 @@ public class MedicineService {
     private MedicineRepository medicineRepository;
 
     // create new medicine (test it when finsih the profile)
-    public MedicineModel createMedicine(String name, long quantity, MultipartFile item_image, MultipartFile date_image, MemberModel donor)
+    public MedicineModel createMedicine(String name, long quantity, MultipartFile item_image, MultipartFile date_image,String description, MemberModel donor)
             throws IOException {
         MedicineModel medicine = new MedicineModel(name, quantity, donor, RequestResult.PENDING);
         medicine = uploadImage(item_image, medicine, "item");
         medicine = uploadImage(date_image, medicine, "date");
+        medicine.setDescription(description);
         medicine = medicineRepository.save(medicine);
         return medicine;
     }
@@ -39,19 +41,14 @@ public class MedicineService {
         return medicineRepository.findAll();
     }
 
-    // get medicine by member (test it when finish the profile)
-    public Optional<List<MedicineModel>> getMedicineByMember(Long id) {
-        return medicineRepository.findByMemberId(id);
-    }
-
-    // get medicne by requestResult (test it when finish with admin side)
-    public Optional<List<MedicineModel>> getMedicineAccepted() {
-        return medicineRepository.findByRequestResult();
-    }
-
     // get medicine by requestResult
     public List<MedicineModel> getMedicinePending() {
-        return medicineRepository.findByRequestResultPending();
+        return medicineRepository.findByRequestResult(RequestResult.PENDING);
+    }
+
+    //get accepted donation
+    public List<MedicineModel> getAcceptedDonation(){
+        return medicineRepository.findByRequestResult(RequestResult.ACCEPTED);
     }
 
     // uploading the image + updating the medicine (test later)
@@ -69,39 +66,75 @@ public class MedicineService {
         if(what.equals("item")){
             medicine.setItem_image(filePath);
         }
-        else{
+        else if(what.equals("date")){
             medicine.setDate_image(filePath);
         }
-        return medicine;
-    }
-
-    // finding the medicine by it's name
-    public Optional<List<MedicineModel>> findMedicineByName(String name) {
-        return medicineRepository.findByName(name);
-    }
-
-    // returning three random medicine
-    public List<MedicineModel> getThreeRandomMedicine() {
-        return medicineRepository.findThreeRandomMedicine();
-    }
-
-    // get the medicine who is requested by the member
-    public List<MedicineModel> getRequestedMedicine(MemberModel curentMember) {
-        List<MedicineModel> medicines = medicineRepository.findMedicinesByRequested();
-        List<MedicineModel> medicinesRequested = new ArrayList<>();
-        int i = 0;
-        while (i <= medicines.size()) {
-            if (medicines.get(i).getRequester() == curentMember) {
-                medicinesRequested.add(medicines.get(i));
-            }
-            i++;
+        else if(what.equals("prescript")){
+            medicine.setPrescript(filePath);
         }
-        return medicinesRequested;
+        return medicine;
     }
 
-    //find the medicine according to its id
-    public Optional<MedicineModel> getMedicineById(Long id){
-        Optional<MedicineModel> medicine = medicineRepository.findMedicineByID(id);
-        return medicine;
+    //count the number of medicine a donor have
+    public Long getCountByDonor(Long id){
+        return medicineRepository.countByDonor(id);
+    }
+
+    //count the number of medicine a requester have
+    public Long getCountByRequester(Long id){
+        return medicineRepository.countByRequester(id);
+    }
+
+    //get all the requests of a member
+    public List<MedicineModel> myRequests(Long id){
+        return medicineRepository.myRequesting(id);
+    }
+
+    //get all the donation of a member
+    public List<MedicineModel> myDonations(Long id){
+        return medicineRepository.myDonating(id);
+    }
+
+    //get the requested medicines to be get
+    public List<MedicineModel> requestMedicineRequested(){
+        return medicineRepository.requestedMedicine(RequestToGet.REQUESTED);
+    }
+
+    public void requesting(Long id, Long quantity, MultipartFile prescript, MemberModel requester) throws IOException {
+        MedicineModel medicine = medicineRepository.findById(id);
+        medicine.setQuantity_needed(quantity);
+        medicine = uploadImage(prescript, medicine,"prescript");
+        medicine.setRequester(requester);
+        medicine.setRequested(RequestToGet.REQUESTED);
+        medicineRepository.save(medicine);
+    }
+
+    //accept the donation
+    public void acceptDonation(Long id){
+        MedicineModel medicine = medicineRepository.findById(id);
+        medicine.setRequestResult(RequestResult.ACCEPTED);
+        medicineRepository.save(medicine);
+    }
+
+    //reject the donation
+    public void rejectDonation(Long id){
+        MedicineModel medicine = medicineRepository.findById(id);
+        medicine.setRequestResult(RequestResult.REJECTED);
+        medicineRepository.save(medicine);
+    }
+
+    //accept the request
+    public void acceptRequest(Long id){
+        MedicineModel medicine = medicineRepository.findById(id);
+        medicine.setRequested(RequestToGet.ACCEPTED);
+        medicineRepository.save(medicine);
+    }
+
+    //reject the request
+    public void rejectRequest(Long id){
+        MedicineModel medicine = medicineRepository.findById(id);
+        medicine.setRequested(RequestToGet.REJECTED);
+        medicineRepository.save(medicine);
     }
 }
+

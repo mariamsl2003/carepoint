@@ -8,6 +8,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.capstone.demo.Enum.RequestResult;
+import com.capstone.demo.Enum.RequestToGet;
+import com.capstone.demo.Model.MedicineModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,11 +26,12 @@ public class MedicalService {
     private MedicalRepository medicalRepository;
 
     // create new medical (test it when finsih the profile)
-    public MedicalModel createMedical(String name, long quantity, MultipartFile item_image, MultipartFile date_image, MemberModel donor)
+    public MedicalModel createMedical(String name, long quantity, MultipartFile item_image, MultipartFile date_image, String description, MemberModel donor)
             throws IOException {
         MedicalModel medical = new MedicalModel(name, quantity, donor, RequestResult.PENDING);
         uploadImage(item_image, medical, "item");
         uploadImage(date_image, medical, "date");
+        medical.setDescription(description);
         medical = medicalRepository.save(medical);
         return medical;
     }
@@ -38,19 +41,9 @@ public class MedicalService {
         return medicalRepository.findAll();
     }
 
-    // get medical by member (test it when finish the profile)
-    public Optional<List<MedicalModel>> getMedicalByMember(Long id) {
-        return medicalRepository.findByMemberId(id);
-    }
-
-    // get medical by requestResult (test it when finish with admin side)
-    public Optional<List<MedicalModel>> getMedicalAccepted() {
-        return medicalRepository.findByRequestResult();
-    }
-
     // get medical by requestResult (test it when finish the doc volunteer profile)
     public List<MedicalModel> getMedicalPending() {
-        return medicalRepository.findByRequestResultPending();
+        return medicalRepository.findByRequestResult(RequestResult.PENDING);
     }
 
     // uploading the image + updating the medical (test later)
@@ -67,40 +60,84 @@ public class MedicalService {
         if(what.equals("item")) {
             medical.setItem_image(filePath);
         }
-        else{
+        else if(what.equals("date")){
             medical.setDate_image(filePath);
         }
-        return medical;
-    }
-
-    // finding the medical by it's name
-    public Optional<List<MedicalModel>> findMedicalByName(String name) {
-        return medicalRepository.findByName(name);
-    }
-
-    // returning three random medical
-    public List<MedicalModel> getThreeRandomMedical() {
-        return medicalRepository.findThreeRandomMedical();
-    }
-
-    // get the medical who is requested by the member
-    public List<MedicalModel> getRequestedMedical(MemberModel curentMember) {
-        List<MedicalModel> medicals = medicalRepository.findMedicalsByRequested();
-        List<MedicalModel> medicalsRequested = new ArrayList<>();
-        int i = 0;
-        while (i <= medicals.size()) {
-            if (medicals.get(i).getRequester() == curentMember) {
-                medicalsRequested.add(medicals.get(i));
-            }
-            i++;
+        else if(what.equals("prescript")){
+            medical.setPrescript(filePath);
         }
-        return medicalsRequested;
-    }
-
-    //find the medical according to its id
-    public Optional<MedicalModel> getMedicalById(Long id){
-        Optional<MedicalModel> medical = medicalRepository.findMedicalByID(id);
         return medical;
     }
 
+    //request form handling
+    public void requesting(Long id, Long quantity, MultipartFile prescript, MemberModel requester) throws IOException {
+        MedicalModel medical = medicalRepository.findByMedicalId(id);
+        medical.setQuantity_needed(quantity);
+        medical = uploadImage(prescript, medical, "prescript");
+        medical.setRequester(requester);
+        medical.setRequested(RequestToGet.REQUESTED);
+        medicalRepository.save(medical);
+    }
+
+    //count the number of medicine a donor have
+    public Long getCountByDonor(Long id){
+        return medicalRepository.countByDonor(id);
+    }
+
+    //count the number of medicine a requester have
+    public Long getCountByRequester(Long id){
+        return medicalRepository.countByRequester(id);
+    }
+
+    //get all the requests of a member
+    public List<MedicalModel> myRequests(Long id){
+        return medicalRepository.myRequesting(id);
+    }
+    //get all the donation of a member
+    public List<MedicalModel> myDonations(Long id){
+        return medicalRepository.myDonating(id);
+    }
+
+    //get the requested medicals to be get
+    public List<MedicalModel> requestMedicalRequested(){
+        return medicalRepository.requestedMedical(RequestToGet.REQUESTED);
+    }
+
+    //get the accepted donations
+    public List<MedicalModel> getAcceptedDonation(){
+        return medicalRepository.findByRequestResult(RequestResult.ACCEPTED);
+    }
+
+    //get medical by id
+    public MedicalModel getMedicalById(Long id){
+        return medicalRepository.findByMedicalId(id);
+    }
+
+    //accept donation
+    public void acceptDonation(Long id){
+        MedicalModel medical = medicalRepository.findByMedicalId(id);
+        medical.setRequestResult(RequestResult.ACCEPTED);
+        medicalRepository.save(medical);
+    }
+
+    //reject donation
+    public void rejectDonation(Long id){
+        MedicalModel medical = medicalRepository.findByMedicalId(id);
+        medical.setRequestResult(RequestResult.REJECTED);
+        medicalRepository.save(medical);
+    }
+
+    //accept request
+    public void acceptRequest(Long id){
+        MedicalModel medical = medicalRepository.findByMedicalId(id);
+        medical.setRequested(RequestToGet.ACCEPTED);
+        medicalRepository.save(medical);
+    }
+
+    //reject request
+    public void rejectRequest(Long id){
+        MedicalModel medical = medicalRepository.findByMedicalId(id);
+        medical.setRequested(RequestToGet.REJECTED);
+        medicalRepository.save(medical);
+    }
 }

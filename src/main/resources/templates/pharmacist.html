@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>MediLink - Volunteer Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+          font-family: 'Poppins', sans-serif;
+          background-color: #f1f5f9;
+        }
+
+        .sidebar {
+          height: 100vh;
+          width: 240px;
+          background-color: #3B6D78;
+          position: fixed;
+          top: 0;
+          left: 0;
+          padding: 2rem 1rem;
+          color: #fff;
+          transition: transform 0.3s ease-in-out;
+          z-index: 1050;
+        }
+
+        .sidebar.hide {
+          transform: translateX(-100%);
+        }
+
+        .sidebar h4 {
+          font-weight: 600;
+          margin-bottom: 2rem;
+        }
+
+        .sidebar .nav-link {
+          color: #cbd5e1;
+          padding: 0.6rem 1rem;
+          border-radius: 6px;
+        }
+
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+          background-color: #2e5058;
+          color: #fff;
+        }
+
+        .main-content {
+          margin-left: 240px;
+          padding: 2rem;
+          transition: margin-left 0.3s ease-in-out;
+        }
+
+        .main-content.full-width {
+          margin-left: 0;
+        }
+
+        .hamburger {
+          display: none;
+          font-size: 1.5rem;
+          background: none;
+          border: none;
+          color: #3B6D78;
+          position: fixed;
+          top: 1rem;
+          left: 1rem;
+          z-index: 1100;
+        }
+
+        @media (max-width: 768px) {
+          .hamburger {
+            display: block;
+          }
+          .main-content {
+            margin-left: 0 !important;
+            padding-top: 4rem;
+          }
+        }
+
+        .card {
+          border: none;
+          border-radius: 16px;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+        }
+
+        .profile-img {
+          width: 100px;
+          height: 100px;
+          object-fit: cover;
+          border-radius: 50%;
+          border: 3px solid #3B6D78;
+        }
+
+        .section-title {
+          font-weight: 600;
+          margin-bottom: 1.25rem;
+          color: #1e293b;
+        }
+
+        .badge-status {
+          font-size: 0.75rem;
+          border-radius: 10px;
+          padding: 5px 10px;
+          margin-left: 10px;
+        }
+
+        .list-group-item {
+          border: none;
+          border-radius: 10px;
+          background-color: #ffffff;
+          margin-bottom: 0.6rem;
+          padding: 0.85rem 1rem;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          transition: background-color 0.2s ease;
+        }
+
+        .list-group-item:hover {
+          background-color: #f0f4f8;
+        }
+
+        .action-buttons button {
+          margin-left: 0.3rem;
+        }
+
+        .toast-container {
+          position: fixed;
+          top: 1rem;
+          right: 1rem;
+          z-index: 1080;
+        }
+
+        .btn {
+          border-radius: 8px;
+          font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Hamburger -->
+<button class="hamburger" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+    <h4><i class="bi bi-person-heart me-2"></i>MediLink Volunteer</h4>
+    <nav class="nav flex-column">
+        <a class="nav-link active" th:href="@{#mainContent}"><i class="bi bi-house-door me-2"></i>Dashboard</a>
+        <a class="nav-link" th:href="@{#pendingDonations}"><i class="bi bi-clock-history me-2"></i>Pending Donations</a>
+        <a class="nav-link" th:href="@{#pendingRequest}"><i class="bi bi-clock-history me-2"></i>Pending Requests</a>
+        <a class="nav-link" th:href="@{/mydonation}"><i class="bi bi-clock-history me-2"></i>My Donation</a>
+        <a class="nav-link" th:href="@{/myrequest}"><i class="bi bi-person-lines-fill me-2"></i>My Request</a>
+    </nav>
+</div>
+
+<!-- Main Content -->
+<div class="main-content" id="mainContent">
+    <!-- Volunteer Profile -->
+    <div class="card p-4 mb-4 text-center">
+        <img src="https://bootdey.com/img/Content/avatar/avatar1.png" class="profile-img mb-3" alt="Volunteer">
+        <h5 class="fw-bold mb-1" th:text="${member.username}">Maya Nasser</h5>
+        <p class="text-muted">Volunteer | <span th:text="${member.currentWork}">Tripoli, Lebanon</span></p>
+        <p th:text="${member.email}"><i class="bi bi-envelope-fill me-2"></i>maya.vol@example.com</p>
+    </div>
+
+    <!-- Pending Donations -->
+    <div class="card p-4 mb-4" id="pendingDonations">
+        <h5 class="section-title"><i class="bi bi-hourglass-split me-2"></i>Pending Donations</h5>
+        <div th:if="${successfulMessage}" class="alert alert-success" th:text="${successfulMessage}"></div>
+        <ul class="list-group">
+            <div th:if="${medicines} != null">
+                    <li class="list-group-item" th:each="medicine : ${medicines}" th:data-id="${medicine.id}">
+                        <span th:text="${medicine.quantity}">10</span> <span th:text="${medicine.name}">Face Masks</span>  - Donated by <span th:text="${medicine.donor.username}">Layla S.</span>
+                        <div class="action-buttons">
+                            <button class="btn btn-outline-success btn-sm" th:onclick="approveMedicineDonation(this)"><i class="bi bi-check-circle"></i></button>
+                            <button class="btn btn-outline-danger btn-sm" th:onclick="rejectMedicineDonation(this)"><i class="bi bi-x-circle"></i></button>
+                        </div>
+                    </li>
+            </div>
+
+            <div th:if="${medicals} != null">
+                    <li class="list-group-item" th:each="medical : ${medicals}" th:data-id="${medical.id}">
+                        <span th:text="${medical.quantity}">1</span> <span th:text="${medical.name}">Wheelchair</span>  - Donated by <span th:text="${medical.donor.username}">Karim H.</span>
+                        <div class="action-buttons">
+                            <button class="btn btn-outline-success btn-sm" onclick="approveMedicalDonation(this)"><i class="bi bi-check-circle"></i></button>
+                            <button class="btn btn-outline-danger btn-sm" onclick="rejectMedicalDonation(this)"><i class="bi bi-x-circle"></i></button>
+                        </div>
+                    </li>
+            </div>
+
+        </ul>
+    </div>
+
+    <!-- Pending Requests -->
+    <div class="card p-4 mb-4" id="pendingRequest">
+        <h5 class="section-title"><i class="bi bi-envelope-open me-2"></i>Pending Requests</h5>
+        <div th:if="${successfulMessage}" class="alert alert-success" th:text="${successfulMessage}"></div>
+        <ul class="list-group">
+            <div th:if="${reqMedicine} != null">
+                    <li class="list-group-item" th:each="medicine : ${reqMedicine}" th:data-id="${medicine.id}">
+                        <span th:text="${medicine.quantity}">2</span> <span th:text="${medicine.name}">Blood Bags</span>  - Requested by <span th:text="${medicine.requester.username}">Red Crescent</span>
+                        <div class="action-buttons">
+                            <button class="btn btn-outline-primary btn-sm" onclick="acceptMedicineRequest(this)"><i class="bi bi-check-lg"></i></button>
+                            <button class="btn btn-outline-danger btn-sm" onclick="rejectMedicineRequest(this)"><i class="bi bi-x-circle"></i></button>
+                        </div>
+                    </li>
+            </div>
+
+            <div th:if="${reqMedical} != null">
+                    <li class="list-group-item" th:each="medical : ${reqMedical}" th:data-id="${medical.id}">
+                        <span th:text="${medical.quantity}">3</span> <span th:text="${medical.name}">Surgical Kit</span>  - Requested by <span th:text="${medical.requester.username}">Zahraa Hospital</span>
+                        <div class="action-buttons">
+                            <button class="btn btn-outline-primary btn-sm" onclick="acceptMedicalRequest(this)"><i class="bi bi-check-lg"></i></button>
+                            <button class="btn btn-outline-danger btn-sm" onclick="rejectMedicalRequest(this)"><i class="bi bi-x-circle"></i></button>
+                        </div>
+                    </li>
+            </div>
+
+        </ul>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+
+    //accept medicine donation
+    function approveMedicineDonation(button) {
+      const item = button.closest('li');
+      const itemId = item.getAttribute('data-id');
+
+      const parsedId = Number(itemId);
+
+        // Check if itemId is a valid number
+        if (isNaN(parsedId)) {
+            console.error('Invalid ID:', itemId);
+            return; // Exit if the ID is not valid
+        }
+
+        fetch(`/pharmacist/medicine/donation/${parsedId}/accept`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        }).catch(err => console.error("Fetch error:", err));
+    }
+
+    //reject medicine donation
+    function rejectMedicineDonation(button) {
+      const item = button.closest('li');
+      const itemId = item.getAttribute('data-id');
+
+      const parsedId = Number(itemId);
+
+        // Check if itemId is a valid number
+        if (isNaN(parsedId)) {
+            console.error('Invalid ID:', itemId);
+            return; // Exit if the ID is not valid
+        }
+
+        fetch(`/pharmacist/medicine/donation/${parsedId}/reject`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        }).catch(err => console.error("Fetch error:", err));
+    }
+
+    //accept medicine request
+    function approveMedicineRequest(button) {
+      const item = button.closest('li');
+      const itemId = item.getAttribute('data-id');
+
+      const parsedId = Number(itemId);
+
+        // Check if itemId is a valid number
+        if (isNaN(parsedId)) {
+            console.error('Invalid ID:', itemId);
+            return; // Exit if the ID is not valid
+        }
+
+        fetch(`/pharmacist/medicine/request/${parsedId}/accept`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        }).catch(err => console.error("Fetch error:", err));
+    }
+
+    //reject medicine request
+    function rejectMedicineRequest(button) {
+      const item = button.closest('li');
+      const itemId = item.getAttribute('data-id');
+
+      const parsedId = Number(itemId);
+
+        // Check if itemId is a valid number
+        if (isNaN(parsedId)) {
+            console.error('Invalid ID:', itemId);
+            return; // Exit if the ID is not valid
+        }
+
+        fetch(`/pharmacist/medicine/request/${parsedId}/reject`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        }).catch(err => console.error("Fetch error:", err));
+    }
+
+    //accept medical donation
+    function approveMedicalDonation(button) {
+      const item = button.closest('li');
+      const itemId = item.getAttribute('data-id');
+
+      const parsedId = Number(itemId);
+
+        // Check if itemId is a valid number
+        if (isNaN(parsedId)) {
+            console.error('Invalid ID:', itemId);
+            return; // Exit if the ID is not valid
+        }
+
+        fetch(`/pharmacist/medical/donation/${parsedId}/accept`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        }).catch(err => console.error("Fetch error:", err));
+    }
+
+    //reject medical donation
+    function rejectMedicalDonation(button) {
+      const item = button.closest('li');
+      const itemId = item.getAttribute('data-id');
+
+      const parsedId = Number(itemId);
+
+        // Check if itemId is a valid number
+        if (isNaN(parsedId)) {
+            console.error('Invalid ID:', itemId);
+            return; // Exit if the ID is not valid
+        }
+
+        fetch(`/pharmacist/medical/donation/${parsedId}/reject`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        }).catch(err => console.error("Fetch error:", err));
+    }
+
+    //accept medical request
+    function approveMedicalRequest(button) {
+      const item = button.closest('li');
+      const itemId = item.getAttribute('data-id');
+
+      const parsedId = Number(itemId);
+
+        // Check if itemId is a valid number
+        if (isNaN(parsedId)) {
+            console.error('Invalid ID:', itemId);
+            return; // Exit if the ID is not valid
+        }
+
+        fetch(`/pharmacist/medical/request/${parsedId}/accept`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        }).catch(err => console.error("Fetch error:", err));
+    }
+
+    //reject medical request
+    function rejectMedicalRequest(button) {
+      const item = button.closest('li');
+      const itemId = item.getAttribute('data-id');
+
+      const parsedId = Number(itemId);
+
+        // Check if itemId is a valid number
+        if (isNaN(parsedId)) {
+            console.error('Invalid ID:', itemId);
+            return; // Exit if the ID is not valid
+        }
+
+        fetch(`/pharmacist/medical/request/${parsedId}/reject`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        }).catch(err => console.error("Fetch error:", err));
+    }
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const main = document.getElementById('mainContent');
+      sidebar.classList.toggle('hide');
+      main.classList.toggle('full-width');
+    }
+
+    // Auto-hide sidebar on small screens
+    window.addEventListener('DOMContentLoaded', () => {
+      if (window.innerWidth <= 768) {
+        document.getElementById('sidebar').classList.add('hide');
+        document.getElementById('mainContent').classList.add('full-width');
+      }
+    });
+</script>
+</body>
+</html>

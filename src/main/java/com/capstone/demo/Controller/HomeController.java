@@ -55,6 +55,10 @@ public class HomeController {
         Object principal = auth.getPrincipal();
         System.out.println("Principal type: " + principal.getClass().getName());
 
+        System.out.println("In home, memberService: " + memberService);
+        System.out.println("In home, medicineService: " + medicineService);
+        System.out.println("In home, medicalService: " + medicalService);
+
         return "homepage";
     }
 
@@ -67,32 +71,63 @@ public class HomeController {
     //navigating to the request page to request new medicine or medical
     @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
     @GetMapping("/request")
-    public String request(){
-        //need some changes
+    public String request(Model model){
+        Long id = retrieving();
+        MemberModel member = memberService.findById(id);
+
+        List<MedicalModel> medicals = medicalService.getAcceptedDonation();
+        List<MedicineModel> medicine = medicineService.getAcceptedDonation();
+
+        System.out.println("medicals: " + medicals);
+        System.out.println("medicines: " + medicine);
+
+        model.addAttribute("member", member);
+        model.addAttribute("medicines", medicine);
+        model.addAttribute("medicals", medicals);
         return "request";
+    }
+
+    @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
+    @PostMapping("/request/form")
+    public String requestForm(@RequestParam("id") Long id, @RequestParam("quantity") Long quantity,
+                              @RequestParam("prescript") MultipartFile prescript, @RequestParam("category") String category) throws IOException {
+
+        Long member_id = retrieving();
+        MemberModel member = memberService.findById(member_id);
+
+        if(category.equals("tools")){
+            medicalService.requesting(id, quantity, prescript, member);
+        }
+        else{
+            medicineService.requesting(id, quantity, prescript, member);
+        }
+
+        return "redirect:/request";
+
     }
 
     // navigating to profile page
     @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
     @GetMapping("/profile")
-    public String profile(@RequestParam(required = false) Boolean edit,
-            Model model) {
+    public String profile(Model model) {
         Long id = retrieving();
         MemberModel member = memberService.findById(id);
-        model.addAttribute("user", member);
-        authenticate(model);
-        model.addAttribute("isEditting", edit != null && edit);
-        return "profile";
-    }
 
-    // profile editting mode
-    @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST)")
-    @PostMapping("/profile/edit")
-    public String editProfile(@RequestParam String username,
-            @RequestParam String password, @RequestParam long phoneNumber, @RequestParam String email) {
-        Long id = retrieving();
-        memberService.updateMember(id, username, email, phoneNumber, password);
-        return "redirect:/profile?member_id=" + id;
+        Long MedicineCount = medicineService.getCountByDonor(id);
+        Long MedicalCount = medicalService.getCountByDonor(id);
+        Long count = MedicalCount + MedicineCount;
+
+        Long MedicineReqCount = medicineService.getCountByRequester(id);
+        Long MedicalReqCount = medicalService.getCountByRequester(id);
+        Long reqCount = MedicalReqCount + MedicineReqCount;
+
+
+        model.addAttribute("member", member);
+        model.addAttribute("count", count);
+        model.addAttribute("reqCount", reqCount);
+
+        authenticate(model);
+        return "profile";
     }
 
     // user authentication
@@ -160,17 +195,17 @@ public class HomeController {
     public String addDonation(@RequestParam("name") String name,
                               @RequestParam("quantity") long quantity, @RequestParam("category") String category,
                               @RequestParam("item_image") MultipartFile item_image, @RequestParam("date_image") MultipartFile date_image,
-                              Model model) throws IOException {
+                              @RequestParam("description") String description,Model model) throws IOException {
 
         Long id = retrieving();
         MemberModel donor = memberService.findById(id);
 
         if(category.equals("Medicines")){
-            MedicineModel medicine = medicineService.createMedicine(name, quantity, item_image, date_image, donor);
+            MedicineModel medicine = medicineService.createMedicine(name, quantity, item_image, date_image,description, donor);
         }
 
         else{
-            MedicalModel medical = medicalService.createMedical(name, quantity, item_image, date_image, donor);
+            MedicalModel medical = medicalService.createMedical(name, quantity, item_image, date_image, description, donor);
         }
         model.addAttribute("successfulMessage", "Form Submitted Successfully");
         return "new_donation";
@@ -182,46 +217,36 @@ public class HomeController {
     public String myRequest(Model model) {
         Long id = retrieving();
         MemberModel member = memberService.findById(id);
-        List<MedicineModel> medicines = medicineService.getRequestedMedicine(member);
-        List<MedicalModel> medicals = medicalService.getRequestedMedical(member);
+        List<MedicineModel> medicines = medicineService.myRequests(id);
+        List<MedicalModel> medicals = medicalService.myRequests(id);
+
+        System.out.println("in myrequest member.role: "+ member.getRole());
+
+        model.addAttribute("role", member.getRole());
+        model.addAttribute("member", member);
         model.addAttribute("medicals", medicals);
         model.addAttribute("medicines", medicines);
         return "my_request";
     }
 
-    // search for both medicine and medical
-    @GetMapping("/search")
-    public String search(Model model, @RequestParam("name") String name) {
-        if (medicalService.findMedicalByName(name).isPresent()) {
-            Optional<List<MedicalModel>> medical = medicalService.findMedicalByName(name);
-            model.addAttribute("med", medical);
-        } else {
-            Optional<List<MedicineModel>> medicine = medicineService.findMedicineByName(name);
-            model.addAttribute("med", medicine);
-        }
-        return "redirect:/my_request";
-    }
-
-    //shows only the medicals in my_request
+    //navigate to my donation
     @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
-    @GetMapping("/mymedical")
-    public String myMedical(Model model) {
-        Long id = retrieving();
-        MemberModel member = memberService.findById(id);
-        List<MedicalModel> medicals = medicalService.getRequestedMedical(member);
-        model.addAttribute("medicals", medicals);
-        return "redirect:/my_request";
-    }
-
-    //shows only the medicines in my_request
-    @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
-    @GetMapping("/mymedicine")
-    public String myMedicine(Model model) {
+    @GetMapping("/mydonation")
+    public String myDonation(Model model) {
         Long id =retrieving();
         MemberModel member = memberService.findById(id);
-        List<MedicineModel> medicines = medicineService.getRequestedMedicine(member);
+        List<MedicineModel> medicines = medicineService.myDonations(id);
+        List<MedicalModel> medicals = medicalService.myDonations(id);
+
+        System.out.println("in mydonation member.role: " + member.getRole());
+
+        model.addAttribute("role", member.getRole());
+        model.addAttribute("member", member);
         model.addAttribute("medicines", medicines);
-        return "redirect:/my_request";
+        model.addAttribute("medicals", medicals);
+        return "my_donation";
     }
+
+
 
 }
