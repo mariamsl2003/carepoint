@@ -1,16 +1,19 @@
 package com.capstone.demo.Controller;
 
+import com.capstone.demo.Config.UserInfoDetails;
 import com.capstone.demo.Model.MedicalModel;
 import com.capstone.demo.Model.MedicineModel;
+import com.capstone.demo.Model.MemberModel;
 import com.capstone.demo.Service.MedicalService;
 import com.capstone.demo.Service.MedicineService;
+import com.capstone.demo.Service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,32 +30,98 @@ public class PharmacistController {
     @Autowired
     MedicalService medicalService;
 
-    //validation of the request
-    @GetMapping("/validation")
-    public String validation(Model model){
-        List<MedicineModel> medicines = medicineService.getMedicinePending();
-        List<MedicalModel> medicals = medicalService.getMedicalPending();
-        model.addAttribute("items", medicals);
-        model.addAttribute("items", medicines);
-        return "request_validation";
+    @Autowired
+    MemberService memberService;
+
+    //retrieving the id
+    private Long retrieving (){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        UserInfoDetails userDetails = (UserInfoDetails) auth.getPrincipal();
+        return userDetails.getMemberId();
     }
 
-    //search for requests in the validation
-    @GetMapping("/validate_search")
-    public String validateSearch(Model model, @RequestParam("name") String name) {
-        List<MedicalModel> medicals = medicalService.getMedicalPending();
-        List<MedicineModel> medicines = medicineService.getMedicinePending();
-        int i = 0;
-        while(!medicals.isEmpty() && !medicines.isEmpty()){
-            if(medicals.get(i).getName().equals(name)){
-                model.addAttribute("item", medicals.get(i));
-            }
-            if(medicines.get(i).getName().equals(name)){
-                model.addAttribute("item", medicines.get(i));
-            }
+    //navigating to his profile
+    @GetMapping("/profile")
+    public String profile(Model model){
+        Long id = retrieving();
+        MemberModel member = memberService.findById(id);
 
-            i++;
-        }
-        return "redirect:/request_validation";
+        List<MedicineModel> medicines = medicineService.getMedicinePending();
+        List<MedicalModel> medicals = medicalService.getMedicalPending();
+
+        List<MedicineModel> requestedMedicines = medicineService.requestMedicineRequested();
+        List<MedicalModel> requestedMedicals = medicalService.requestMedicalRequested();
+
+        model.addAttribute("member", member);
+        model.addAttribute("medicines", medicines);
+        model.addAttribute("medicals", medicals);
+        model.addAttribute("reqMedicine", requestedMedicines);
+        model.addAttribute("reqMedical", requestedMedicals);
+
+        return "pharmacist";
+    }
+
+    //accept medicine donation
+    @PostMapping("/medicine/donation/{id}/accept")
+    public String acceptMedicineDonation(@PathVariable Long id, Model model){
+        medicineService.acceptDonation(id);
+        model.addAttribute("successfulMessage", "Donation Updated");
+        return "redirect:/pharmacist/profile";
+    }
+
+    //reject medicine donation
+    @PostMapping("/medicine/donation/{id}/reject")
+    public String rejectMedicineDonation(@PathVariable Long id,Model model){
+        medicineService.rejectDonation(id);
+        model.addAttribute("successfulMessage", "Donation Updated");
+        return "redirect:/pharmacist/profile";
+    }
+
+    //accept medicine request
+    @PostMapping("/medicine/request/{id}/accept")
+    public String acceptMedicineRequest(@PathVariable Long id, Model model){
+        medicineService.acceptRequest(id);
+        model.addAttribute("successfulMessage", "Request Updated");
+        return "redirect:/pharmacist/profile";
+    }
+
+    //reject medicine request
+    @PostMapping("/medicine/request/{id}/reject")
+    public String rejectMedicineRequest(@PathVariable Long id, Model model){
+        medicineService.rejectRequest(id);
+        model.addAttribute("successfulMessage", "Request Updated");
+        return "redirect:/pharmacist/profile";
+    }
+
+    //accept medical donation
+    @PostMapping("/medical/donation/{id}/accept")
+    public String acceptMedicalDonation(@PathVariable Long id, Model model){
+        medicalService.acceptDonation(id);
+        model.addAttribute("successfulMessage", "Donation Updated");
+        return "redirect:/pharmacist/profile";
+    }
+
+    //reject medical donation
+    @PostMapping("/medical/donation/{id}/reject")
+    public String rejectMedicalDonation(@PathVariable Long id, Model model){
+        medicalService.rejectDonation(id);
+        model.addAttribute("successfulMessage", "Donation Updated");
+        return "redirect:/pharmacist/profile";
+    }
+
+    //accept medical request
+    @PostMapping("/medical/request/{id}/accept")
+    public String acceptMedicalRequest(@PathVariable Long id, Model model){
+        medicalService.acceptRequest(id);
+        model.addAttribute("successfulMessage", "Request Updated");
+        return "redirect:/pharmacist/profile";
+    }
+
+    //reject medical request
+    @PostMapping("/medical/request/{id}/reject")
+    public String rejectMedicalRequest(@PathVariable Long id, Model model){
+        medicalService.rejectRequest(id);
+        model.addAttribute("successfulMessage", "Request Updated");
+        return "redirect:/pharmacist/profile";
     }
 }

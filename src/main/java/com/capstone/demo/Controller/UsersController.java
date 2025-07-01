@@ -67,6 +67,7 @@ public class UsersController {
     //navigating to login page
     @GetMapping("/login")
     public String login(){
+        System.out.println("In login, memberService: " + memberService);
         logger.info("Accessing login page");
         return "login";
     }

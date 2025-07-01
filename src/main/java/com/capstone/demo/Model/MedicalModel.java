@@ -5,15 +5,7 @@ import java.util.UUID;
 import com.capstone.demo.Enum.RequestResult;
 import com.capstone.demo.Enum.RequestToGet;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,12 +25,19 @@ public class MedicalModel {
 
     private long quantity;
 
+    private Long quantity_needed;
+
     private String item_image;
 
     private String date_image;
 
+    private String description;
+
+    private String prescript;
+
     // this is for accepting/rejecting to donate an item
     @Enumerated(EnumType.STRING)
+    @Column(name = "request_result")
     private RequestResult requestResult;
 
     // this for accepting/rejecting the item to give it to a member
@@ -47,15 +46,40 @@ public class MedicalModel {
 
     // this is the member who requested it
     @ManyToOne
-    @JoinColumn(name = "member_to_get_id")
+    @JoinColumn(name = "requester")
     private MemberModel requester;
 
     //the one who donate
     @ManyToOne
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "donor")
     private MemberModel donor;
 
    //getters and setters
+
+
+    public Long getQuantity_needed() {
+        return quantity_needed;
+    }
+
+    public void setQuantity_needed(Long quantity_needed) {
+        this.quantity_needed = quantity_needed;
+    }
+
+    public String getPrescript() {
+        return prescript;
+    }
+
+    public void setPrescript(String prescript) {
+        this.prescript = prescript;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public Long getId() {
         return id;
@@ -130,6 +154,10 @@ public class MedicalModel {
     }
 
     //constructor
+
+
+    public MedicalModel() {
+    }
 
     public MedicalModel(String name, long quantity, MemberModel donor, RequestResult requestResult) {
         this.name = name;

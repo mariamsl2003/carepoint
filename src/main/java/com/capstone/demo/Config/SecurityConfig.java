@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -30,6 +31,7 @@ import java.util.Optional;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@ComponentScan(basePackages = "com.capstone.demo")
 public class SecurityConfig {
 
     @Autowired
@@ -42,13 +44,21 @@ public class SecurityConfig {
         http.csrf().disable() // Disable CSRF protection if not needed
                 .authorizeHttpRequests(auth -> {
                     // Allow access to these endpoints without authentication
-                    auth.requestMatchers("/","/home", "/about", "/search",
+                    auth.requestMatchers("/","/home", "/about",
                                     "/users/signup", "/users/signing", "/users/login", "/users/pass").permitAll()
                                     .requestMatchers("/profile", "/profile/edit", "/volunteering",
-                                            "/volunteer", "/donation" , "/new-donation", "/myrequest", "/mymedical",
-                                            "mymedicine", "/request").authenticated()
-                                    .requestMatchers("/pharmacist/validation", "/pharmacist/validate-search").authenticated()
-                                    .requestMatchers("/admin/dashboard", "/admin/medi", "/admin/volunteer",
+                                            "/volunteer", "/donation" , "/new-donation", "/myrequest", "/mydonation",
+                                            "/request", "/request/form").authenticated()
+                                    .requestMatchers("/pharmacist/profile",
+                                            "/pharmacist/medicine/donation/{id}/accept",
+                                            "/pharmacist/medicine/donation/{id}/reject",
+                                            "/pharmacist/medicine/request/{id}/accept",
+                                            "/pharmacist/medicine/request/{id}/reject",
+                                            "/pharmacist/medical/donation/{id}/accept",
+                                            "/pharmacist/medical/donation/{id}/reject",
+                                            "/pharmacist/medical/request/{id}/accept",
+                                            "/pharmacist/medical/request/{id}/reject").authenticated()
+                                    .requestMatchers("/admin/dashboard", "/admin/volunteer",
                                             "/admin/{id}/accept", "/admin/{id}/reject").hasAuthority("ADMIN");
                     // Allow all other requests without authentication
                     auth.anyRequest().permitAll();

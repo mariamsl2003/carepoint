@@ -1,0 +1,56 @@
+.services h2 {
+  font-weight: bold;
+}
+
+.card-title {
+  color: #003B73;
+  font-weight: 600;
+  font-size: 1.5rem;
+}
+
+.card-text {
+  font-size: 1.1rem;
+}
+
+.card.h-100 {
+  min-height: 320px !important;
+  padding: 2rem 1rem !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.service-card {
+  background-size: cover;
+  background-position: center;
+  color: #003B73;
+  transition: all 0.3s ease;
+  padding: 2rem;
+  position: relative;
+}
+
+.donate-card {
+  background-image: url('images/donate-card.png');
+}
+
+.request-card {
+  background-image: url('images/testrequest-card.png');
+}
+
+.join-card {
+  background-image: url('images/join-card.png');
+}
+
+.hero-image img {
+  width: 80%;
+  max-width: 350px;
+  height: auto;
+  object-fit: cover;
+  display: block;
+  margin: 0 auto;
+}
+
+.image-container {
+  position: relative;
+}

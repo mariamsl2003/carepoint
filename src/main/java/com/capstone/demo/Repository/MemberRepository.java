@@ -16,7 +16,7 @@ public interface MemberRepository extends JpaRepository<MemberModel, UUID> {
     @Query(value = "select * from member where id = ?1", nativeQuery = true)
     MemberModel findMemberById(Long id);
 
-    @Query(value = "select * from member where request = PENDING", nativeQuery = true)
+    @Query(value = "select * from member where request = 'PENDING'", nativeQuery = true)
     List<MemberModel> getPendingMember();
 
     @Query(value = "select * from member where email = ?1", nativeQuery = true)

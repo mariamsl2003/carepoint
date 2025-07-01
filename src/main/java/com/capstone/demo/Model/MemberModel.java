@@ -158,6 +158,13 @@ public class MemberModel {
     public MemberModel() {
     }
 
+    //constructor for admin
+    public MemberModel(String username, String email, String address){
+        this.username =username;
+        this.email = email;
+        this.address = address;
+    }
+
     //constructor
     public MemberModel(String username, String password, String email, Roles role) {
         this.username = username;

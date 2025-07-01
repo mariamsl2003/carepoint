@@ -117,13 +117,6 @@
           justify-content: space-between;
           align-items: center;
         }
-
-        .toast-container {
-          position: fixed;
-          top: 1rem;
-          right: 1rem;
-          z-index: 2000;
-        }
     </style>
 </head>
 <body>
@@ -135,10 +128,10 @@
 <div class="sidebar" id="sidebar">
     <h4><i class="bi bi-shield-check me-2"></i>MediLink Admin</h4>
     <nav class="nav flex-column">
-        <a class="nav-link active" th:href="@{#}"><i class="bi bi-house-door me-2"></i>Dashboard</a>
-        <a class="nav-link" th:href="@{#}"><i class="bi bi-person-lines-fill me-2"></i>Volunteers</a>
-        <a class="nav-link" th:href="@{#}"><i class="bi bi-box-seam me-2"></i>Donations</a>
-        <a class="nav-link" th:href="@{#}"><i class="bi bi-inbox me-2"></i>Requests</a>
+        <a class="nav-link active" th:href="@{#mainContent}"><i class="bi bi-house-door me-2"></i>Dashboard</a>
+        <a class="nav-link" th:href="@{#allDonations}"><i class="bi bi-box-seam me-2"></i>Donations</a>
+        <a class="nav-link" th:href="@{#allRequests}"><i class="bi bi-inbox me-2"></i>Requests</a>
+        <a class="nav-link" th:href="@{/admin/volunteer}"><i class="bi bi-person-lines-fill me-2"></i>Volunteers</a>
     </nav>
 </div>
 
@@ -147,60 +140,35 @@
     <!-- Profile -->
     <div class="card p-4 mb-4 text-center">
         <img src="https://bootdey.com/img/Content/avatar/avatar3.png" class="profile-img mb-3" alt="Admin">
-        <h5 class="fw-bold mb-1">Dr. Nour Fawaz</h5>
-        <p class="text-muted">Admin | Saida, Lebanon</p>
-        <p><i class="bi bi-envelope-fill me-2"></i>admin@medilink.org</p>
-    </div>
-
-    <!-- Volunteer Approval -->
-    <div class="card p-4 mb-4">
-        <h5 class="section-title"><i class="bi bi-person-check-fill me-2"></i>Pending Volunteer Applications</h5>
-        <ul class="list-group">
-            <li class="list-group-item">
-                Sarah Ibrahim - Tripoli
-                <div>
-                    <button class="btn btn-success btn-sm me-1" onclick="approve(this, 'Volunteer')"><i class="bi bi-check-circle"></i></button>
-                    <button class="btn btn-danger btn-sm" onclick="reject(this)"><i class="bi bi-x-circle"></i></button>
-                </div>
-            </li>
-            <li class="list-group-item">
-                Hadi Tradieh - Qubayyat
-                <div>
-                    <button class="btn btn-success btn-sm me-1" onclick="approve(this, 'Volunteer')"><i class="bi bi-check-circle"></i></button>
-                    <button class="btn btn-danger btn-sm" onclick="reject(this)"><i class="bi bi-x-circle"></i></button>
-                </div>
-            </li>
-        </ul>
+        <h5 class="fw-bold mb-1" th:text="${admin.username}">Dr. Nour Fawaz</h5>
+        <p class="text-muted">Admin | <span th:text="${admin.address}">Saida, Lebanon</span></p>
+        <p th:text="${admin.email}"><i class="bi bi-envelope-fill me-2"></i>admin@medilink.org</p>
     </div>
 
     <!-- Donations -->
-    <div class="card p-4 mb-4">
+    <div class="card p-4 mb-4" id="allDonations">
         <h5 class="section-title"><i class="bi bi-box-seam me-2"></i>All Donations</h5>
-        <ul class="list-group">
-            <li class="list-group-item">5 Oxygen Tanks <span class="badge bg-warning text-dark badge-status">Pending</span></li>
-            <li class="list-group-item">50 Bandages <span class="badge bg-success badge-status">Approved</span></li>
-            <li class="list-group-item">2 Crutches <span class="badge bg-danger badge-status">Rejected</span></li>
+        <ul class="list-group" th:if="${medicines != null and medicals != null}">
+            <li class="list-group-item" th:each="medicine : ${medicines}">
+                <span th:text="${medicine.quantity}">5</span> <span th:text="${medicine.name}">Oxygen Tanks</span>  <span class="badge bg-warning text-dark badge-status" th:value="${medicine.requestResult}">Pending</span>
+            </li>
+            <li class="list-group-item" th:each="medical : ${medicals}">
+                <span th:text="${medical.quantity}">50</span> <span th:text="${medical.name}">Bandages</span>  <span class="badge bg-success badge-status" th:value="${medical.requestResult}">Approved</span>
+            </li>
         </ul>
     </div>
 
     <!-- Requests -->
-    <div class="card p-4 mb-4">
+    <div class="card p-4 mb-4" id="allRequests">
         <h5 class="section-title"><i class="bi bi-inbox me-2"></i>All Requests</h5>
-        <ul class="list-group">
-            <li class="list-group-item">1 Heart Rate Monitor <span class="badge bg-warning text-dark badge-status">Pending</span></li>
-            <li class="list-group-item">Syringes Box <span class="badge bg-success badge-status">Fulfilled</span></li>
-            <li class="list-group-item">3 IV Drip Bags <span class="badge bg-danger badge-status">Rejected</span></li>
+        <ul class="list-group" th:if="${medicines != null and medicals != null}">
+            <li class="list-group-item" th:each="medicine : ${medicines}">
+                <span th:text="medicine.quantity">1</span> <span th:text="medicine.name">Heart Rate Monitor</span>  <span class="badge bg-warning text-dark badge-status" th:value="${medicine.requested}">Pending</span>
+            </li>
+            <li class="list-group-item" th:each="medical : ${medicals}">
+                <span th:text="medical.quantity">3</span> <span th:text="medical.name">IV Drip Bags</span>  <span class="badge bg-danger badge-status" th:value="${medical.requested}">Rejected</span>
+            </li>
         </ul>
-    </div>
-</div>
-
-<!-- Toast -->
-<div class="toast-container">
-    <div id="toastMsg" class="toast align-items-center text-white bg-primary border-0" role="alert">
-        <div class="d-flex">
-            <div class="toast-body" id="toastText"></div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-        </div>
     </div>
 </div>
 
@@ -217,27 +185,6 @@
         toggleSidebar();
       }
     });
-
-    function showToast(message) {
-      document.getElementById('toastText').textContent = message;
-      const toast = new bootstrap.Toast(document.getElementById('toastMsg'));
-      toast.show();
-    }
-
-    function approve(button, type) {
-      const item = button.closest('li');
-      const name = item.childNodes[0].textContent.trim();
-      item.innerHTML = `<strong>Approved ${type}:</strong> ${name}`;
-      item.classList.add('list-group-item-success');
-      showToast(`${name} approved as ${type}`);
-    }
-
-    function reject(button) {
-      const item = button.closest('li');
-      const name = item.childNodes[0].textContent.trim();
-      item.remove();
-      showToast(`${name} has been rejected`);
-    }
 </script>
 </body>
 </html>
