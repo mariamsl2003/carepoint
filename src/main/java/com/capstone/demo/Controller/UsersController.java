@@ -43,9 +43,11 @@ public class UsersController {
     public String Singing(@RequestParam("username") String username,
                           @RequestParam("email") String email,
                           @RequestParam("password") String password,
+                          @RequestParam("address") String address,
+                          @RequestParam("phoneNumber") long phoneNumber,
                           HttpServletRequest request){
         //creation of the user
-        memberService.createMember(username, email, password);
+        memberService.createMember(username, email, password, address, phoneNumber);
 
         //logging after register automatically
         UserDetails userDetails = userInfoDetailsService.loadUserByUsername(email);

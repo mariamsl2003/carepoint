@@ -36,21 +36,27 @@ public class MemberService {
 
 
     // create member (test it when done with login)
-    public MemberModel createMember(String username, String email, String password) {
+    public MemberModel createMember(String username, String email, String password, String address, long phoneNumber) {
         String encodePassword = passwordEncoder.encode(password);
         MemberModel member = new MemberModel(username, encodePassword, email, Roles.MEMBER);
+        member.setAddress(address);
+        member.setPhoneNumber(phoneNumber);
         member = memberRepository.save(member);
         return member;
     }
 
     // find member by username (test it when done with login)
-    public Optional<MemberModel> findMemberByUserName(String username) {
+    public MemberModel findMemberByUserName(String username) {
         return memberRepository.findUserByUserName(username);
     }
 
     public Optional<MemberModel> findMemberByEmail(String email){
         logger.info("email in service is: {}", email);
         return memberRepository.findMemberByEmail(email);
+    }
+
+    public MemberModel findUsingEmail(String email){
+        return memberRepository.findUsingEmail(email);
     }
 
     // find member by id
@@ -65,12 +71,12 @@ public class MemberService {
 
 
     // updating the member
-    public MemberModel updateMember(Long id, String username, String email, long phoneNumber, String password) {
+    public MemberModel updateMember(Long id, String email, long phoneNumber, String password, String address) {
         MemberModel member = memberRepository.findMemberById(id);
         String encodePassword = passwordEncoder.encode(password);
         member.setPassword(encodePassword);
         member.setPhoneNumber(phoneNumber);
-        member.setUsername(username);
+        member.setAddress(address);
         member.setEmail(email);
         memberRepository.save(member);
         return member;

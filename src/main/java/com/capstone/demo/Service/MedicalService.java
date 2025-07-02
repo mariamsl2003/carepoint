@@ -21,7 +21,6 @@ import com.capstone.demo.Repository.MedicalRepository;
 @Service
 public class MedicalService {
 
-    private final String uploadDir = "C:\\Users\\Lenovo\\Documents\\Mariam Folder\\Capstone\\carepoint\\project\\demo\\uploaded";
     @Autowired
     private MedicalRepository medicalRepository;
 
@@ -43,28 +42,31 @@ public class MedicalService {
 
     // get medical by requestResult (test it when finish the doc volunteer profile)
     public List<MedicalModel> getMedicalPending() {
-        return medicalRepository.findByRequestResult(RequestResult.PENDING);
+        return medicalRepository.findByRequestResult(RequestResult.PENDING.name());
     }
 
     // uploading the image + updating the medical (test later)
     public MedicalModel uploadImage(MultipartFile file, MedicalModel medical, String what) throws IOException {
-        //ensure the upload directory exists
-        File uploadDirFile = new File(uploadDir);
-        if(!uploadDirFile.exists()){
+        // Ensure the upload directory exists
+        File uploadDirFile = new File("src/main/resources/static/uploaded"); // Set the correct upload directory
+        if (!uploadDirFile.exists()) {
             uploadDirFile.mkdirs();
         }
-
-        String filePath = uploadDir + file.getOriginalFilename();
+        // Construct the file path
+        String filePath = uploadDirFile.getAbsolutePath() + File.separator + file.getOriginalFilename(); // Use File.separator for OS compatibility
+        // Save the file
         file.transferTo(new File(filePath));
 
+        // Update the medicine with the relative URL
+        String relativeUrl = "/uploaded/" + file.getOriginalFilename();
         if(what.equals("item")) {
-            medical.setItem_image(filePath);
+            medical.setItem_image(relativeUrl);
         }
         else if(what.equals("date")){
-            medical.setDate_image(filePath);
+            medical.setDate_image(relativeUrl);
         }
         else if(what.equals("prescript")){
-            medical.setPrescript(filePath);
+            medical.setPrescript(relativeUrl);
         }
         return medical;
     }
@@ -100,12 +102,34 @@ public class MedicalService {
 
     //get the requested medicals to be get
     public List<MedicalModel> requestMedicalRequested(){
-        return medicalRepository.requestedMedical(RequestToGet.REQUESTED);
+        return medicalRepository.requestedMedical(RequestToGet.REQUESTED.name());
+    }
+
+    //get All Donation
+    public List<MedicalModel> getAllDonation(){
+        return medicalRepository.getAllDonation();
+    }
+
+    //get All Request
+    public List<MedicalModel> getAllRequests(){
+        return medicalRepository.getAllRequests();
+    }
+
+    //update the medicine
+    public void updateMedical(MedicalModel medical, MultipartFile itemImage, MultipartFile dateImage) throws IOException {
+        medical = uploadImage(itemImage, medical, "item");
+        medical = uploadImage(dateImage, medical, "date");
+        medicalRepository.save(medical);
+    }
+
+    //delete from medical
+    public void removeMedicalById(Long id){
+        medicalRepository.removeById(id);
     }
 
     //get the accepted donations
     public List<MedicalModel> getAcceptedDonation(){
-        return medicalRepository.findByRequestResult(RequestResult.ACCEPTED);
+        return medicalRepository.findByRequestResult(RequestResult.ACCEPTED.name());
     }
 
     //get medical by id

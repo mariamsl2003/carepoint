@@ -77,6 +77,19 @@
 </head>
 <body>
 
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.querySelectorAll('.toggle-password').forEach(toggle => {
+      toggle.addEventListener('click', () => {
+        const input = toggle.previousElementSibling;
+        if (input && input.tagName === 'INPUT') {
+          input.type = input.type === 'password' ? 'text' : 'password';
+        }
+      });
+    });
+</script>
+
 <!-- SVG Definitions -->
 <svg class="d-none">
     <!-- Include symbols like #user, #letter, #lock, #devicon--facebook, etc. -->
@@ -102,6 +115,20 @@
 
                     <div class="mb-4 position-relative">
                         <input type="email" class="form-control px-5 py-3 shadow-sm" name="email" placeholder="Email Address" required>
+                        <svg class="position-absolute top-50 start-0 translate-middle-y ms-3 opacity-50" width="22" height="22">
+                            <use th:href="@{#letter}" />
+                        </svg>
+                    </div>
+
+                    <div class="mb-4 position-relative">
+                        <input type="text" class="form-control px-5 py-3 shadow-sm" name="address" placeholder="Your Address" required>
+                        <svg class="position-absolute top-50 start-0 translate-middle-y ms-3 opacity-50" width="22" height="22">
+                            <use th:href="@{#letter}" />
+                        </svg>
+                    </div>
+
+                    <div class="mb-4 position-relative">
+                        <input type="number" class="form-control px-5 py-3 shadow-sm" name="phoneNumber" placeholder="Phone Number" required>
                         <svg class="position-absolute top-50 start-0 translate-middle-y ms-3 opacity-50" width="22" height="22">
                             <use th:href="@{#letter}" />
                         </svg>
@@ -140,18 +167,5 @@
         </div>
     </div>
 </section>
-
-<!-- Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    document.querySelectorAll('.toggle-password').forEach(toggle => {
-      toggle.addEventListener('click', () => {
-        const input = toggle.previousElementSibling;
-        if (input && input.tagName === 'INPUT') {
-          input.type = input.type === 'password' ? 'text' : 'password';
-        }
-      });
-    });
-</script>
 </body>
 </html>

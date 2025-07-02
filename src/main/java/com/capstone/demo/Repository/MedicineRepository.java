@@ -19,7 +19,7 @@ public interface MedicineRepository extends JpaRepository<MedicineModel, UUID> {
     MedicineModel findById(Long id);
 
     @Query(value = "select * from medicine where request_result = ?1", nativeQuery = true)
-    List<MedicineModel> findByRequestResult(RequestResult request);
+    List<MedicineModel> findByRequestResult(String request);
 
 
     @Query(value = "select count(*) from medicine where donor = ?1", nativeQuery = true)
@@ -34,7 +34,16 @@ public interface MedicineRepository extends JpaRepository<MedicineModel, UUID> {
     @Query(value = "select * from medicine where donor = ?1", nativeQuery = true)
     List<MedicineModel> myDonating(Long id);
 
-    @Query(value = "select * from medicine where requested =?1", nativeQuery = true)
-    List<MedicineModel> requestedMedicine(RequestToGet request);
+    @Query(value = "select * from medicine where requested = ?1", nativeQuery = true)
+    List<MedicineModel> requestedMedicine(String request);
+
+    @Query(value = "delete from medicine where id = ?1", nativeQuery = true)
+    void removeById(Long id);
+
+    @Query(value = "select * from medicine where donor is not null", nativeQuery = true)
+    List<MedicineModel> getAllDonation();
+
+    @Query(value = "select * from medicine where requester is not null", nativeQuery = true)
+    List<MedicineModel> getAllRequests();
 
 }

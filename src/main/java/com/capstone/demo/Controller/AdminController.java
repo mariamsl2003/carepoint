@@ -43,12 +43,17 @@ public class AdminController {
 
         MemberModel admin = new MemberModel("fatima", "fatima55@gmail.com", "Beirut, Lebanon");
 
-        List<MedicineModel> medicines = medicineService.getAllMedicine();
-        List<MedicalModel> medicals = medicalService.getAllMedical();
+        List<MedicineModel> medicines = medicineService.getAllDonation();
+        List<MedicalModel> medicals = medicalService.getAllDonation();
+
+        List<MedicineModel> reqMedicines = medicineService.getAllRequests();
+        List<MedicalModel> reqMedicals = medicalService.getAllRequests();
 
         model.addAttribute("admin", admin);
         model.addAttribute("medicines", medicines);
         model.addAttribute("medicals", medicals);
+        model.addAttribute("reqMedicines", reqMedicines);
+        model.addAttribute("reqMedicals", reqMedicals);
         return "dashboard";
     }
 

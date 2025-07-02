@@ -21,7 +21,6 @@ import com.capstone.demo.Repository.MedicineRepository;
 @Service
 public class MedicineService {
 
-    private final String uploadDir = "C:\\Users\\Lenovo\\Documents\\Mariam Folder\\Capstone\\carepoint\\project\\demo\\uploaded";
     @Autowired
     private MedicineRepository medicineRepository;
 
@@ -36,41 +35,57 @@ public class MedicineService {
         return medicine;
     }
 
-    // get all medicine (will be tested soon)
-    public List<MedicineModel> getAllMedicine() {
-        return medicineRepository.findAll();
+    //get All Donation
+    public List<MedicineModel> getAllDonation(){
+        return medicineRepository.getAllDonation();
+    }
+
+    //get All Request
+    public List<MedicineModel> getAllRequests(){
+        return medicineRepository.getAllRequests();
+    }
+
+    //update the medicine
+    public void updateMedicine(MedicineModel medicine, MultipartFile itemImage, MultipartFile dateImage) throws IOException {
+        medicine = uploadImage(itemImage, medicine, "item");
+        medicine = uploadImage(dateImage, medicine, "date");
+        medicineRepository.save(medicine);
     }
 
     // get medicine by requestResult
     public List<MedicineModel> getMedicinePending() {
-        return medicineRepository.findByRequestResult(RequestResult.PENDING);
+        return medicineRepository.findByRequestResult(RequestResult.PENDING.name());
     }
 
     //get accepted donation
     public List<MedicineModel> getAcceptedDonation(){
-        return medicineRepository.findByRequestResult(RequestResult.ACCEPTED);
+        System.out.println("RequestResult.ACCEPTED: " + RequestResult.ACCEPTED);
+        return medicineRepository.findByRequestResult(RequestResult.ACCEPTED.name());
     }
 
     // uploading the image + updating the medicine (test later)
     public MedicineModel uploadImage(MultipartFile file, MedicineModel medicine, String what) throws IOException {
-        //ensure the upload directory exists
-        File uploadDirFile = new File(uploadDir);
-        if(!uploadDirFile.exists()){
+        // Ensure the upload directory exists
+        File uploadDirFile = new File("src/main/resources/static/uploaded"); // Set the correct upload directory
+        if (!uploadDirFile.exists()) {
             uploadDirFile.mkdirs();
         }
-        //construct the file path
-        String filePath = uploadDir + file.getOriginalFilename();
-        // save the file
+        // Construct the file path
+        String filePath = uploadDirFile.getAbsolutePath() + File.separator + file.getOriginalFilename(); // Use File.separator for OS compatibility
+        // Save the file
         file.transferTo(new File(filePath));
+
+        // Update the medicine with the relative URL
+        String relativeUrl = "/uploaded/" + file.getOriginalFilename();
         //update the medicine
         if(what.equals("item")){
-            medicine.setItem_image(filePath);
+            medicine.setItem_image(relativeUrl);
         }
         else if(what.equals("date")){
-            medicine.setDate_image(filePath);
+            medicine.setDate_image(relativeUrl);
         }
         else if(what.equals("prescript")){
-            medicine.setPrescript(filePath);
+            medicine.setPrescript(relativeUrl);
         }
         return medicine;
     }
@@ -90,6 +105,11 @@ public class MedicineService {
         return medicineRepository.myRequesting(id);
     }
 
+    //remove medicine
+    public void removeMedicine(Long id){
+        medicineRepository.removeById(id);
+    }
+
     //get all the donation of a member
     public List<MedicineModel> myDonations(Long id){
         return medicineRepository.myDonating(id);
@@ -97,7 +117,7 @@ public class MedicineService {
 
     //get the requested medicines to be get
     public List<MedicineModel> requestMedicineRequested(){
-        return medicineRepository.requestedMedicine(RequestToGet.REQUESTED);
+        return medicineRepository.requestedMedicine(RequestToGet.REQUESTED.name());
     }
 
     public void requesting(Long id, Long quantity, MultipartFile prescript, MemberModel requester) throws IOException {

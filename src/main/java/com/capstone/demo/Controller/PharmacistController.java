@@ -61,6 +61,17 @@ public class PharmacistController {
         return "pharmacist";
     }
 
+    //edit profile
+    @PostMapping("/profile/edit")
+    public String editProfile(@RequestParam("id") Long id,
+                              @RequestParam("email") String email,
+                              @RequestParam("phoneNumber") Long phoneNumber,
+                              @RequestParam("password") String password,
+                              @RequestParam("address") String address){
+        memberService.updateMember(id, email, phoneNumber, password, address);
+        return "redirect:/profile";
+    }
+
     //accept medicine donation
     @PostMapping("/medicine/donation/{id}/accept")
     public String acceptMedicineDonation(@PathVariable Long id, Model model){

@@ -121,6 +121,21 @@
 </head>
 <body>
 
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('hide');
+      document.getElementById('mainContent').classList.toggle('full-width');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      if (window.innerWidth <= 768) {
+        toggleSidebar();
+      }
+    });
+</script>
+
 <!-- Hamburger Button -->
 <button class="hamburger" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
 
@@ -132,6 +147,7 @@
         <a class="nav-link" th:href="@{#allDonations}"><i class="bi bi-box-seam me-2"></i>Donations</a>
         <a class="nav-link" th:href="@{#allRequests}"><i class="bi bi-inbox me-2"></i>Requests</a>
         <a class="nav-link" th:href="@{/admin/volunteer}"><i class="bi bi-person-lines-fill me-2"></i>Volunteers</a>
+        <a class="nav-link" th:href="@{/logout}"><i class="bi bi-person-lines-fill me-2"></i> Logout</a>
     </nav>
 </div>
 
@@ -161,30 +177,15 @@
     <!-- Requests -->
     <div class="card p-4 mb-4" id="allRequests">
         <h5 class="section-title"><i class="bi bi-inbox me-2"></i>All Requests</h5>
-        <ul class="list-group" th:if="${medicines != null and medicals != null}">
-            <li class="list-group-item" th:each="medicine : ${medicines}">
-                <span th:text="medicine.quantity">1</span> <span th:text="medicine.name">Heart Rate Monitor</span>  <span class="badge bg-warning text-dark badge-status" th:value="${medicine.requested}">Pending</span>
+        <ul class="list-group" th:if="${reqMedicines != null and reqMedicals != null}">
+            <li class="list-group-item" th:each="medicine : ${reqMedicines}">
+                <span th:text="${medicine.quantity}">1</span> <span th:text="${medicine.name}">Heart Rate Monitor</span>  <span class="badge bg-warning text-dark badge-status" th:text="${medicine.requested}">Pending</span>
             </li>
-            <li class="list-group-item" th:each="medical : ${medicals}">
-                <span th:text="medical.quantity">3</span> <span th:text="medical.name">IV Drip Bags</span>  <span class="badge bg-danger badge-status" th:value="${medical.requested}">Rejected</span>
+            <li class="list-group-item" th:each="medical : ${reqMedicals}">
+                <span th:text="${medical.quantity}">3</span> <span th:text="${medical.name}">IV Drip Bags</span>  <span class="badge bg-danger badge-status" th:text="${medical.requested}">Rejected</span>
             </li>
         </ul>
     </div>
 </div>
-
-<!-- Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    function toggleSidebar() {
-      document.getElementById('sidebar').classList.toggle('hide');
-      document.getElementById('mainContent').classList.toggle('full-width');
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      if (window.innerWidth <= 768) {
-        toggleSidebar();
-      }
-    });
-</script>
 </body>
 </html>

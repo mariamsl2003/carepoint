@@ -8,10 +8,14 @@ import java.util.UUID;
 
 import com.capstone.demo.Config.SecurityConfig;
 import com.capstone.demo.Config.UserInfoDetails;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,6 +46,9 @@ public class HomeController {
     MedicalService medicalService;
 
     @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
     MedicineService medicineService;
 
     @Autowired
@@ -49,7 +56,7 @@ public class HomeController {
 
     // displaying home page
     @GetMapping("/home")
-    public String homePage() {
+    public String homePage(Model model, @AuthenticationPrincipal UserInfoDetails userDetails) {
         //checking the principal type just for the error handling
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Object principal = auth.getPrincipal();
@@ -59,12 +66,33 @@ public class HomeController {
         System.out.println("In home, medicineService: " + medicineService);
         System.out.println("In home, medicalService: " + medicalService);
 
+        //making sure the user is authenticated
+        MemberModel member = null;
+
+        if(userDetails != null){
+            member = memberService.findUsingEmail(userDetails.getUsername());
+        }
+
+        System.out.println("member: " + member);
+
+        model.addAttribute("member", member);
+
         return "homepage";
     }
 
     // displaying about page
     @GetMapping("/about")
-    public String about() {
+    public String about(Model model, @AuthenticationPrincipal UserInfoDetails userDetails) {
+        //making sure the user is authenticated
+        MemberModel member = null;
+
+        if(userDetails != null){
+            member = memberService.findUsingEmail(userDetails.getUsername());
+        }
+
+        System.out.println("member: " + member);
+
+        model.addAttribute("member", member);
         return "about";
     }
 
@@ -107,7 +135,7 @@ public class HomeController {
     }
 
     // navigating to profile page
-    @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
+    @PreAuthorize("hasAnyAuthority('MEMBER')")
     @GetMapping("/profile")
     public String profile(Model model) {
         Long id = retrieving();
@@ -126,22 +154,19 @@ public class HomeController {
         model.addAttribute("count", count);
         model.addAttribute("reqCount", reqCount);
 
-        authenticate(model);
         return "profile";
     }
 
-    // user authentication
-    private void authenticate(Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Optional<MemberModel> member = null;
-
-        if (authentication != null && authentication.isAuthenticated()) {
-            String username = authentication.getName();
-            member = memberService.findMemberByUserName(username);
-        }
-
-        model.addAttribute("user", member);
-        model.addAttribute("header", "fragments/header :: header");
+    //edit profile
+    @PreAuthorize("hasAnyAuthenticate('MEMBER')")
+    @PostMapping("/profile/edit")
+    public String editProfile(@RequestParam("id") Long id,
+                              @RequestParam("email") String email,
+                              @RequestParam("phoneNumber") Long phoneNumber,
+                              @RequestParam("password") String password,
+                              @RequestParam("address") String address){
+        memberService.updateMember(id, email, phoneNumber, password, address);
+        return "redirect:/profile";
     }
 
     //retrieving the id
@@ -247,6 +272,96 @@ public class HomeController {
         return "my_donation";
     }
 
+    //edit medicine in my request
+    @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
+    @PostMapping("/medicine/req/edit")
+    public String requestMedicineEdit(@RequestParam("item") String itemJson,
+                                      @RequestParam(value = "itemImage", required = false) MultipartFile itemImage,
+                                      @RequestParam(value = "dateImage", required = false) MultipartFile dateImage) throws IOException {
+        // Convert itemJson to Item object
+        MedicineModel updatedMedicine = objectMapper.readValue(itemJson, MedicineModel.class);
 
+        // Update the item in the database
+        medicineService.updateMedicine(updatedMedicine, itemImage, dateImage);
+        // Redirect or return view
+        return "redirect:/myrequest";
+    }
+
+    //edit medicine in my request
+    @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
+    @PostMapping("/medical/req/edit")
+    public String requestMedicalEdit(@RequestParam("item") String itemJson,
+                                      @RequestParam(value = "itemImage", required = false) MultipartFile itemImage,
+                                      @RequestParam(value = "dateImage", required = false) MultipartFile dateImage) throws IOException {
+        // Convert itemJson to Item object
+        MedicalModel updatedMedicine = objectMapper.readValue(itemJson, MedicalModel.class);
+
+        // Update the item in the database
+        medicalService.updateMedical(updatedMedicine, itemImage, dateImage);
+        // Redirect or return view
+        return "redirect:/myrequest";
+    }
+
+    //edit medicine in my request
+    @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
+    @PostMapping("/medicine/donate/edit")
+    public String donateMedicineEdit(@RequestParam("item") String itemJson,
+                                      @RequestParam(value = "itemImage", required = false) MultipartFile itemImage,
+                                      @RequestParam(value = "dateImage", required = false) MultipartFile dateImage) throws IOException {
+        // Convert itemJson to Item object
+        MedicineModel updatedMedicine = objectMapper.readValue(itemJson, MedicineModel.class);
+
+        // Update the item in the database
+        medicineService.updateMedicine(updatedMedicine, itemImage, dateImage);
+        // Redirect or return view
+        return "redirect:/mydonation";
+    }
+
+    //edit medicine in my request
+    @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
+    @PostMapping("/medical/donate/edit")
+    public String donateMedicalEdit(@RequestParam("item") String itemJson,
+                                     @RequestParam(value = "itemImage", required = false) MultipartFile itemImage,
+                                     @RequestParam(value = "dateImage", required = false) MultipartFile dateImage) throws IOException {
+        // Convert itemJson to Item object
+        MedicalModel updatedMedicine = objectMapper.readValue(itemJson, MedicalModel.class);
+
+        // Update the item in the database
+        medicalService.updateMedical(updatedMedicine, itemImage, dateImage);
+        // Redirect or return view
+        return "redirect:/mydonation";
+    }
+
+    //delete medicine in my donation
+    @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
+    @PostMapping("/{id}/medicineRemove")
+    public String medicineRemove(@PathVariable Long id){
+        medicineService.removeMedicine(id);
+        return "redirect:/mydonation";
+    }
+
+    //delete medical in my donation
+    @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
+    @PostMapping("/{id}/medicalRemove")
+    public String medicalRemove(@PathVariable Long id){
+        medicalService.removeMedicalById(id);
+        return "redirect:/mydonation";
+    }
+
+    //delete medicine in my request
+    @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
+    @PostMapping("/{id}/reqMedicineRemove")
+    public String reqMedicineRemove(@PathVariable Long id){
+        medicineService.removeMedicine(id);
+        return "redirect:/myrequest";
+    }
+
+    //delete medical in my request
+    @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
+    @PostMapping("/{id}/reqMedicalRemove")
+    public String reqMedicalRemove(@PathVariable Long id){
+        medicalService.removeMedicalById(id);
+        return "redirect:/myrequest";
+    }
 
 }

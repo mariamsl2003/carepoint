@@ -95,6 +95,199 @@
           padding: 1rem;
         }
     </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+
+        let originValues = {};
+
+        function showToast(message) {
+        document.getElementById('toastText').textContent = message;
+        const toast = new bootstrap.Toast(document.getElementById('toastMsg'));
+        toast.show();
+      }
+
+        function deleteItem(button) {
+             const item = button.closest('li');
+             const itemId = item.getAttribute(data-id);
+             const category = item.getAttribute(data-category);
+
+             const parsedId = Number(itemId);
+
+             // Check if itemId is a valid number
+            if (isNaN(parsedId)) {
+                console.error('Invalid ID:', itemId);
+                return; // Exit if the ID is not valid
+            }
+
+            if(category == 'medicine'){
+                fetch(`/${parsedId}/medicineRemove`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                }).catch(err => console.error("Fetch error:", err));
+            }
+
+            else if(category == 'medical'){
+                fetch(`/${parsedId}/medicalRemove`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                }).catch(err => console.error("Fetch error:", err));
+            }
+
+             showToast(`Item Deleted`);
+           }
+
+           function editItem(button) {
+              // Enable the input fields for editing
+              document.getElementById('name').removeAttribute('readonly');
+              document.getElementById('quantity').removeAttribute('readonly');
+              document.getElementById('description').removeAttribute('readonly');
+              document.getElementById('donor').removeAttribute('readonly');
+
+              // Show image change buttons
+              document.getElementById('changeImageBtn').style.display = 'inline-block';
+              document.getElementById('changeDateImageBtn').style.display = 'inline-block';
+
+              // Store original data for canceling
+              originalData = {
+                name: document.getElementById('name').value,
+                quantity: document.getElementById('quantity').value,
+                description: document.getElementById('description').value,
+                donor: document.getElementById('donor').value,
+                itemImageUrl: document.getElementById('item_image').src,
+                dateImageUrl: document.getElementById('date_image').src
+              };
+
+              // Toggle buttons
+              document.getElementById('editButton').style.display = 'none';
+              document.getElementById('deleteButton').style.display = 'none';
+              document.getElementById('saveButton').style.display = 'inline-block';
+              document.getElementById('cancelButton').style.display = 'inline-block';
+           }
+
+           function saveItem(){
+              const id = document.getElementById('selectedId').value;
+              const category = document.getElementById('category').value;
+              const parsedId = Number(id);
+              const updatedItem = {
+                id: parsedId,
+                name: document.getElementById('name').value,
+                quantity: document.getElementById('quantity').value,
+                description: document.getElementById('description').value,
+                donor: document.getElementById('donor').value
+              };
+
+              const itemImageFile = document.getElementById('imageUpload').files[0];
+              const dateImageFile = document.getElementById('dateImageUpload').files[0];
+
+              const formData = new FormData();
+              formData.append('item', JSON.stringify(updatedItem));
+              if (itemImageFile) formData.append('itemImage', itemImageFile);
+              if (dateImageFile) formData.append('dateImage', dateImageFile);
+
+
+
+              // Call the controller method to save the updated item
+              if(category == 'medicine'){
+                fetch(`/medicine/donate/edit`, { //change the url
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: formData
+                });
+              }
+
+              if(category == 'medical'){
+                fetch(`/medical/donate/edit`, { //change the url
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: formData
+                });
+              }
+
+              showToast('Item Updated');
+           }
+
+           function  cancelEdit(){
+             // Revert the input fields to their original values
+             document.getElementById('name').value = originalData.name;
+             document.getElementById('quantity').value = originalData.quantity;
+             document.getElementById('description').value = originalData.description;
+             document.getElementById('donor').value = originalData.donor;
+
+             // Revert images
+             document.getElementById('item_image').src = originalData.itemImageUrl;
+             document.getElementById('date_image').src = originalData.dateImageUrl;
+
+             // Disable the input fields
+             document.getElementById('name').setAttribute('readonly', true);
+             document.getElementById('quantity').setAttribute('readonly', true);
+             document.getElementById('description').setAttribute('readonly', true);
+             document.getElementById('donor').setAttribute('readonly', true);
+
+             // Hide image change buttons
+             document.getElementById('changeImageBtn').style.display = 'none';
+             document.getElementById('changeDateImageBtn').style.display = 'none';
+
+             // Toggle buttons
+             document.getElementById('editButton').style.display = 'inline-block';
+             document.getElementById('deleteButton').style.display = 'inline-block';
+             document.getElementById('saveButton').style.display = 'none';
+             document.getElementById('cancelButton').style.display = 'none';
+           }
+
+       function toggleSidebar() {
+         const sidebar = document.getElementById('sidebar');
+         const content = document.getElementById('mainContent');
+         sidebar.classList.toggle('hide');
+         content.classList.toggle('full-width');
+       }
+
+       // Auto-hide sidebar on load if screen is small
+       window.addEventListener('DOMContentLoaded', () => {
+         if (window.innerWidth <= 768) {
+           document.getElementById('sidebar').classList.add('hide');
+           document.getElementById('mainContent').classList.add('full-width');
+         }
+       });
+
+        function getSelectId(button) {
+            const item = button.closest('li');
+            const itemId = item.getAttribute('data-id');
+            const category = item.getAttribute('data-category');
+
+            const id = item.getAttribute('data-id');
+            const name = item.getAttribute('data-name');
+            const quantity = item.getAttribute('data-quantity');
+            const description = item.getAttribute('data-description');
+            const itemImage = item.getAttribute('data-item');
+            const dateImage = item.getAttribute('data-date');
+            const donor = item.getAttribute('data-donor');
+
+                const modal = document.getElementById('showModal');
+                if (modal) {
+
+                    document.getElementById('selectedId').value = id; // Set the hidden ID
+                    document.getElementById('category').value = category; // Set the category
+                    // Populate other fields
+                    document.getElementById('item_image').src = itemImage; // Set the image source
+                    document.getElementById('name').value = name; // Set the name
+                    document.getElementById('quantity').value = quantity; // Set the quantity
+                    document.getElementById('description').value = description; // Set the description
+                    document.getElementById('donor').value = donor;
+                    document.getElementById('date_image').src = dateImage;
+
+                    const bootstrapModal = new bootstrap.Modal(modal);
+                    bootstrapModal.show();
+
+                }
+
+
+        };
+    </script>
 </head>
 <body>
 <!-- Hamburger -->
@@ -106,18 +299,22 @@
         <h4><i class="bi bi-person me-2"></i>Member Panel</h4>
         <nav class="nav flex-column mt-4">
             <a class="nav-link active" th:href="@{/profile}"><i class="bi bi-house-door me-2"></i>Dashboard</a>
+            <a class="nav-link" th:href="@{/home}"><i class="bi bi-clock-history me-2"></i>Home</a>
             <a class="nav-link" th:href="@{#mainContent}"><i class="bi bi-box me-2"></i>My Donations</a>
             <a class="nav-link" th:href="@{/myrequest}"><i class="bi bi-inbox me-2"></i>My Requests</a>
+            <a class="nav-link" th:href="@{/logout}"><i class="bi bi-person-lines-fill me-2"></i> Logout</a>
         </nav>
     </div>
     <div th:if="${role != null and role == T(com.capstone.demo.Enum.Roles).PHARMACIST}">
         <h4><i class="bi bi-person-heart me-2"></i>MediLink Volunteer</h4>
         <nav class="nav flex-column">
-            <a class="nav-link active" th:href="@{/pharmacist/profile/#mainContent}"><i class="bi bi-house-door me-2"></i>Dashboard</a>
-            <a class="nav-link" th:href="@{/pharmacist/profile/#pendingDonations}"><i class="bi bi-clock-history me-2"></i>Pending Donations</a>
-            <a class="nav-link" th:href="@{/pharmacist/profile/#pendingRequest}"><i class="bi bi-clock-history me-2"></i>Pending Requests</a>
+            <a class="nav-link active" th:href="@{/pharmacist/profile}"><i class="bi bi-house-door me-2"></i>Dashboard</a>
+            <a class="nav-link" th:href="@{/home}"><i class="bi bi-clock-history me-2"></i>Home</a>
+            <a class="nav-link" th:href="@{/pharmacist/profile}"><i class="bi bi-clock-history me-2"></i>Pending Donations</a>
+            <a class="nav-link" th:href="@{/pharmacist/profile}"><i class="bi bi-clock-history me-2"></i>Pending Requests</a>
             <a class="nav-link" th:href="@{#mainContent}"><i class="bi bi-clock-history me-2"></i>My Donation</a>
             <a class="nav-link" th:href="@{/myrequest}"><i class="bi bi-person-lines-fill me-2"></i>My Request</a>
+            <a class="nav-link" th:href="@{/logout}"><i class="bi bi-person-lines-fill me-2"></i> Logout</a>
         </nav>
     </div>
 </div>
@@ -136,7 +333,7 @@
     <div th:if="${role != null and role == T(com.capstone.demo.Enum.Roles).PHARMACIST}">
         <div class="card p-4 mb-4 text-center">
             <img src="https://bootdey.com/img/Content/avatar/avatar1.png" class="profile-img mb-3" alt="Volunteer">
-            <h5 class="fw-bold mb-1" th:text="${user.username}">Maya Nasser</h5>
+            <h5 class="fw-bold mb-1" th:text="${member.username}">Maya Nasser</h5>
             <p class="text-muted">Volunteer | <span th:text="${member.currentWork}">Tripoli, Lebanon</span></p>
             <p><i class="bi bi-envelope-fill me-2" th:text="${member.email}"></i>maya.vol@example.com</p>
         </div>
@@ -146,60 +343,95 @@
     <div class="card p-4 mb-4">
         <h5 class="fw-bold mb-3"><i class="bi bi-inbox-fill me-2"></i>My Donations</h5>
         <ul class="list-group" id="requestList" th:if="${medicines != null and medicals != null}">
-            <li class="list-group-item" th:each="medicine : ${medicines}">
+            <li class="list-group-item" th:each="medicine : ${medicines}" data-category="medicine" th:data-id="${medicine.id}"
+                th:data-name = ${medicine.name} th:data-quantity="${medicine.quantity}"
+                th:data-donor="${medicine.donor.username}" th:data-item="${medicine.item_image}"
+                th:data-date="${medicine.date_image}" th:data-description="${medicine.description}">
                 <span th:text="${medicine.name}">Blood Pressure Monitor</span>
                 <div class="d-flex align-items-center">
-                    <span class="badge bg-warning text-dark me-2" th:text="${requested}">Pending</span>
-                    <button class="btn btn-outline-warning btn-sm me-1" onclick="editItem(this)"><i class="bi bi-pencil-fill"></i></button>
-                    <button class="btn btn-outline-danger btn-sm" onclick="deleteItem(this)"><i class="bi bi-trash-fill"></i></button>
+                    <span class="badge bg-warning text-dark me-2" th:text="${medicine.requestResult}">Pending</span>
+                    <button type="button" class="btn btn-outline-warning btn-sm me-1" th:onclick="getSelectId(this)"><i class="bi bi-pencil-fill"></i></button>
                 </div>
             </li>
-            <li class="list-group-item" th:each="medical : ${medicals}">
+            <li class="list-group-item" th:each="medical : ${medicals}" data-category="medical" th:data-id="${medical.id}"
+                th:data-name = ${medical.name} th:data-quantity="${medical.quantity}"
+                th:data-donor="${medical.donor.username}" th:data-item="${medical.item_image}"
+                th:data-date="${medical.date_image}" th:data-description="${medical.description}">
                 <span th:text="${medical.name}">Diabetes Strips</span>
                 <div class="d-flex align-items-center">
-                    <span class="badge bg-success text-white me-2" th:text="${medical.requested}">Fulfilled</span>
-                    <button class="btn btn-outline-warning btn-sm me-1" onclick="editItem(this)"><i class="bi bi-pencil-fill"></i></button>
-                    <button class="btn btn-outline-danger btn-sm" onclick="deleteItem(this)"><i class="bi bi-trash-fill"></i></button>
+                    <span class="badge bg-success text-white me-2" th:text="${medical.requestResult}">Fulfilled</span>
+                    <button type="button" class="btn btn-outline-warning btn-sm me-1" th:onclick="getSelectId(this)"><i class="bi bi-pencil-fill"></i></button>
                 </div>
             </li>
         </ul>
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    function deleteItem(button) {
-      const item = button.closest('li');
-      const text = item.childNodes[0].textContent.trim();
-      item.remove();
-      showToast(`Deleted: ${text}`);
-    }
 
-    function editItem(button) {
-      const item = button.closest('li');
-      const textNode = [...item.childNodes].find(n => n.nodeType === 3 && n.textContent.trim() !== "");
-      const originalText = textNode.textContent.trim();
-      const newText = prompt("Edit item:", originalText);
-      if (newText && newText.trim()) {
-        textNode.textContent = newText.trim() + ' ';
-        showToast(`Updated to: ${newText}`);
-      }
-    }
+<!-- Request Modal -->
+<div class="modal fade" id="showModal" tabindex="-1" aria-labelledby="requestModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="requestModalLabel">Item Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <input type="hidden" class="form-control" name="id" id="selectedId" />
+                    <input type="hidden" class="form-control" name="category" id="category" >
+                </div>
+                <div class="mb-3">
+                    <img class="form-control" id="item_image" style="max-width:200px; max-height:200px;"/>
+                    <input type="file" id="imageUpload" style="display:none;" accept="image/*">
+                    <button type="button" class="btn btn-sm btn-secondary mt-2" id="changeImageBtn" style="display:none;"
+                            onclick="document.getElementById('imageUpload').click()">Change Image</button>
+                </div>
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" class="form-control" name="name" id="name"  readonly />
+                </div>
+                <div class="mb-3">
+                    <label for="quantity" class="form-label">Quantity</label>
+                    <input type="text" class="form-control" name="quantity" id="quantity"  readonly/>
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <input type="text" class="form-control" name="description" id="description"  readonly/>
+                </div>
+                <div class="mb-3">
+                    <label for="donor" class="form-label">Donor</label>
+                    <input type="text" class="form-control" name="donor" id="donor" readonly/>
+                </div>
+                <div class="mb-3">
+                    <img class="form-control" id="date_image" style="max-width:200px; max-height:200px;" />
+                    <input type="file" id="dateImageUpload" style="display:none;" accept="image/*">
+                    <button type="button" class="btn btn-sm btn-secondary mt-2" id="changeDateImageBtn" style="display:none;"
+                            onclick="document.getElementById('dateImageUpload').click()">Change Image</button>
+                </div>
 
-    function toggleSidebar() {
-      const sidebar = document.getElementById('sidebar');
-      const content = document.getElementById('mainContent');
-      sidebar.classList.toggle('hide');
-      content.classList.toggle('full-width');
-    }
+                <div class="modal-footer">
+                    <button class="btn btn-outline-warning btn-sm me-1" onclick="editItem(this)" id="editButton"><i class="bi bi-pencil-fill"></i></button>
+                    <button class="btn btn-outline-danger btn-sm" onclick="deleteItem(this)" id="deleteButton"><i class="bi bi-trash-fill"></i></button>
+                    <button type="button" class="btn btn-outline-success btn-sm" id="saveButton" style="display: none;" onclick="saveItem()">Save</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" id="cancelButton" style="display: none;" onclick="cancelEdit()">Cancel</button>
+                </div>
+            </div>
+        </form>
 
-    // Auto-hide sidebar on load if screen is small
-    window.addEventListener('DOMContentLoaded', () => {
-      if (window.innerWidth <= 768) {
-        document.getElementById('sidebar').classList.add('hide');
-        document.getElementById('mainContent').classList.add('full-width');
-      }
-    });
-</script>
+        <script id="medicinesList" type="application/json" th:utext="${#strings.escapeJava(#strings.toString(medicines))}"></script>
+        <script id="medicalsList" type="application/json" th:utext="${#strings.escapeJava(#strings.toString(medicals))}"></script>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast-container">
+    <div id="toastMsg" class="toast align-items-center text-white bg-primary border-0" role="alert">
+        <div class="d-flex">
+            <div class="toast-body" id="toastText"></div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
 </body>
 
 </html>

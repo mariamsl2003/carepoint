@@ -162,122 +162,6 @@
 </head>
 <body>
 
-<div class="animated-bg">
-    <div class="pill" style="left: 10%; animation-delay: 0s;"></div>
-    <div class="pill" style="left: 30%; animation-delay: 3s;"></div>
-    <div class="pill" style="left: 50%; animation-delay: 6s;"></div>
-    <div class="pill" style="left: 70%; animation-delay: 9s;"></div>
-    <div class="pill" style="left: 90%; animation-delay: 12s;"></div>
-</div>
-
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-light fixed-top">
-    <div class="container">
-        <a class="navbar-brand d-flex align-items-center" th:href="@{#}">
-            <img th:src="@{images/testlogo.png}" alt="MediLink Logo"> MediLink
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav mx-auto">
-                <li class="nav-item"><a class="nav-link" th:href="@{/home}">Home</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/about}">About Us</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/donation}">Donate</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/request}">Request</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/volunteering}">Join Us</a></li>
-            </ul>
-            <a th:href="@{/users/login}" class="btn btn-outline-primary me-2">Login</a>
-            <a th:href="@{/users/signup}" class="btn btn-primary">Register</a>
-        </div>
-    </div>
-</nav>
-
-<!-- Content -->
-<div class="container py-5 mt-5">
-    <h2 class="text-center mb-4">Available Donations</h2>
-    <input type="text" id="searchInput" class="form-control form-control-lg mb-4" placeholder="Search items by name or description..." onkeyup="filterCards()" />
-
-    <div class="category-boxes">
-        <div class="category-box" onclick="filterByCategory('medicine')">
-            <i class="bi bi-capsule-pill"></i>
-            <div>Medicine</div>
-        </div>
-        <div class="category-box" onclick="filterByCategory('tools')">
-            <i class="bi bi-eyedropper"></i>
-            <div>Medical Tools</div>
-        </div>
-        <div class="category-box" onclick="filterByCategory('all')">
-            <i class="bi bi-grid"></i>
-            <div>All</div>
-        </div>
-    </div>
-
-    <div class="row row-cols-1 row-cols-md-2 g-4">
-        <div class="col donation-card">
-            <div class="card shadow-sm h-100" th:if="${medicines != null}">
-                <div class="card-body" th:each="medicine : ${medicines}" data-category="medicine" th:data-id="${medicine.id}">
-                        <img class="card-image" th:src="${medicine.item_image}">
-                        <h5 class="card-title" th:value="${medicine.name}">Surgical Masks</h5>
-                        <p class="card-text"><strong>Description:</strong> <span th:value="${medicine.description}">500 pcs</span></p>
-                        <button class="btn btn-success mt-2" th:onlcik="getSelectId(this)">Request</button>
-
-                </div>
-            </div>
-        </div>
-        <div class="col donation-card">
-            <div class="card shadow-sm h-100" th:if="${medicals != null}">
-                <div class="card-body" th:each="medical : ${medicals}" data-category="tools" th:data-id="${medical.id}">
-
-                        <img class="card-image" th:src="${medical.item_image}">
-                        <h5 class="card-title" th:value="${medical.name}">Wheelchair</h5>
-                        <p class="card-text"><strong>Description</strong> <span th:value="${medical.description}">Unopened, sealed packages.</span> </p>
-                        <button class="btn btn-success mt-2" th:onclick="getSelectId(this)">Request</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Scroll to Top Button -->
-<button onclick="scrollToTop()" id="scrollTopBtn" title="Go to top">
-    <i class="bi bi-arrow-up-circle-fill"></i>
-</button>
-
-<!-- Request Modal -->
-<div class="modal fade" id="requestModal" tabindex="-1" aria-labelledby="requestModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <form class="modal-content" th:action="@{/request/form}" method="post">
-            <div class="modal-header">
-                <h5 class="modal-title" id="requestModalLabel">Request: Item</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <input type="hidden" class="form-control" name="category" id="selectedCategory">
-                    <input type="hidden" class="form-control" name="id" id="selectedID"/>
-                </div>
-                <div class="mb-3">
-                    <label for="quantity" class="form-label">Quantity Needed</label>
-                    <input type="number" class="form-control" name="quantity" id="quantity" required />
-                </div>
-                <div class="mb-3">
-                    <label for="reason" class="form-label">Prescript / Reason</label>
-                    <input type="file" class="form-control" name="prescript" id="reason" accept="image/*" required />
-                </div>
-                <div class="mb-3">
-                    <label for="location" class="form-label">Your Location</label>
-                    <input type="text" class="form-control" name="location" th:value="${member.address}" id="location" disabled />
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="submit" class="btn btn-primary">Submit Request</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            </div>
-        </form>
-    </div>
-</div>
-
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
@@ -313,39 +197,160 @@
       });
     });
 
-
-
-
-Copy
-
-Download
-19 lines
-
 function getSelectId(button) {
-            const item = button.closest('li');
+            const item = button.closest('.donation-card');
             const itemId = item.getAttribute('data-id');
             const category = item.getAttribute('data-category');
 
-            // Get the target element with the matching ID
-            const targetElement = document.getElementById(itemId);
+            // Get the modal element
+            const modal = document.getElementById('requestModal');
+            if (modal) {
 
-            if (targetElement) {
-                // Scroll to the element with smooth behavior
-                targetElement.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
+                // Check if elements exist
+        const selectedIdField = document.getElementById('selectedId');
+        const categoryField = document.getElementById('category');
+        if (selectedIdField && categoryField) {
+            // Set values in hidden form fields
+            selectedIdField.value = itemId;
+            categoryField.value = category;
+            // Show the modal using Bootstrap's modal method
+            const bootstrapModal = new bootstrap.Modal(modal);
+            bootstrapModal.show();
+        } else {
+            console.error("One or more elements not found: selectedId or category");
+        }
             }
 
-            // Set values in hidden form fields
-            document.getElementById('selectedId').value = itemId;
 
-    return itemId;
 }
 
     function scrollToTop() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 </script>
+
+<div class="animated-bg">
+    <div class="pill" style="left: 10%; animation-delay: 0s;"></div>
+    <div class="pill" style="left: 30%; animation-delay: 3s;"></div>
+    <div class="pill" style="left: 50%; animation-delay: 6s;"></div>
+    <div class="pill" style="left: 70%; animation-delay: 9s;"></div>
+    <div class="pill" style="left: 90%; animation-delay: 12s;"></div>
+</div>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light fixed-top">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" th:href="@{#}">
+            <img th:src="@{images/testlogo.png}" alt="MediLink Logo"> MediLink
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item"><a class="nav-link" th:href="@{/home}">Home</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/about}">About Us</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/donation}">Donate</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/request}">Request</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/volunteering}">Join Us</a></li>
+            </ul>
+            <div th:if="${member.role != null and member.role == T(com.capstone.demo.Enum.Roles).MEMBER}" class="d-flex align-items-center">
+                <a th:href="@{/profile}" class="btn btn-outline-primary me-2">
+                    <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="profile" style="width: 30px; height: 30px; border-radius: 50%;">
+                </a>
+            </div>
+            <div th:if="${member.role != null and member.role == T(com.capstone.demo.Enum.Roles).PHARMACIST}" class="d-flex align-items-center">
+                <a th:href="@{/pharmacist/profile}" class="btn btn-outline-primary me-2">
+                    <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="profile" style="width: 30px; height: 30px; border-radius: 50%;">
+                </a>
+            </div>
+            <a th:href="@{/logout}" class="btn btn-danger">Logout</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Content -->
+<div class="container py-5 mt-5">
+    <h2 class="text-center mb-4">Available Donations</h2>
+    <input type="text" id="searchInput" class="form-control form-control-lg mb-4" placeholder="Search items by name or description..." onkeyup="filterCards()" />
+
+    <div class="category-boxes">
+        <div class="category-box" onclick="filterByCategory('medicine')">
+            <i class="bi bi-capsule-pill"></i>
+            <div>Medicine</div>
+        </div>
+        <div class="category-box" onclick="filterByCategory('tools')">
+            <i class="bi bi-eyedropper"></i>
+            <div>Medical Tools</div>
+        </div>
+        <div class="category-box" onclick="filterByCategory('all')">
+            <i class="bi bi-grid"></i>
+            <div>All</div>
+        </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 g-4" th:if="${medicines != null and medicals != null}">
+        <div class="col donation-card" th:each="medicine : ${medicines}" data-category="medicine" th:data-id="${medicine.id}">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                        <img class="card-image" th:src="${medicine.item_image}">
+                        <h5 class="card-title" th:text="${medicine.name}">Surgical Masks</h5>
+                        <p class="card-text"><strong>Description:</strong> <span th:text="${medicine.description}">500 pcs</span></p>
+                        <button class="btn btn-success mt-2" onclick="getSelectId(this)">Request</button>
+
+                </div>
+            </div>
+        </div>
+        <div class="col donation-card" th:each="medical : ${medicals}" data-category="tools" th:data-id="${medical.id}">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+
+                        <img class="card-image" th:src="${medical.item_image}">
+                        <h5 class="card-title" th:text="${medical.name}">Wheelchair</h5>
+                        <p class="card-text"><strong>Description</strong> <span th:text="${medical.description}">Unopened, sealed packages.</span> </p>
+                        <button class="btn btn-success mt-2" onclick="getSelectId(this)">Request</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scroll to Top Button -->
+<button onclick="scrollToTop()" id="scrollTopBtn" title="Go to top">
+    <i class="bi bi-arrow-up-circle-fill"></i>
+</button>
+
+<!-- Request Modal -->
+<div class="modal fade" id="requestModal" tabindex="-1" aria-labelledby="requestModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="modal-content" th:action="@{/request/form}" method="post">
+            <div class="modal-header">
+                <h5 class="modal-title" id="requestModalLabel">Request: Item</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <input type="hidden" class="form-control" name="category" id="category">
+                    <input type="hidden" class="form-control" name="id" id="selectedId"/>
+                </div>
+                <div class="mb-3">
+                    <label for="quantity" class="form-label">Quantity Needed</label>
+                    <input type="number" class="form-control" name="quantity" id="quantity" required />
+                </div>
+                <div class="mb-3">
+                    <label for="reason" class="form-label">Prescript / Reason</label>
+                    <input type="file" class="form-control" name="prescript" id="reason" accept="image/*" required />
+                </div>
+                <div class="mb-3">
+                    <label for="location" class="form-label">Your Location</label>
+                    <input type="text" class="form-control" name="location" th:value="${member.address}" id="location" disabled />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Submit Request</button>
+            </div>
+        </form>
+    </div>
+</div>
 </body>
 </html>

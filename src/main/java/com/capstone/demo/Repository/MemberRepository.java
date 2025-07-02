@@ -11,7 +11,7 @@ import com.capstone.demo.Model.MemberModel;
 
 public interface MemberRepository extends JpaRepository<MemberModel, UUID> {
     @Query(value = "select * from member where username = ?1", nativeQuery = true)
-    Optional<MemberModel> findUserByUserName(String name);
+    MemberModel findUserByUserName(String name);
 
     @Query(value = "select * from member where id = ?1", nativeQuery = true)
     MemberModel findMemberById(Long id);
@@ -21,5 +21,8 @@ public interface MemberRepository extends JpaRepository<MemberModel, UUID> {
 
     @Query(value = "select * from member where email = ?1", nativeQuery = true)
     Optional<MemberModel> findMemberByEmail(String email);
+
+    @Query(value = "select * from member where email = ?1", nativeQuery = true)
+    MemberModel findUsingEmail(String email);
 
 }
