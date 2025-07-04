@@ -160,12 +160,14 @@ public class HomeController {
     //edit profile
     @PreAuthorize("hasAnyAuthenticate('MEMBER')")
     @PostMapping("/profile/edit")
-    public String editProfile(@RequestParam("id") Long id,
-                              @RequestParam("email") String email,
+    public String editProfile(@RequestParam("email") String email,
                               @RequestParam("phoneNumber") Long phoneNumber,
                               @RequestParam("password") String password,
-                              @RequestParam("address") String address){
+                              @RequestParam("address") String address,
+                              Model model){
+        Long id = retrieving();
         memberService.updateMember(id, email, phoneNumber, password, address);
+        model.addAttribute("successMessage", "Profile Updated");
         return "redirect:/profile";
     }
 
@@ -272,66 +274,6 @@ public class HomeController {
         return "my_donation";
     }
 
-    //edit medicine in my request
-    @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
-    @PostMapping("/medicine/req/edit")
-    public String requestMedicineEdit(@RequestParam("item") String itemJson,
-                                      @RequestParam(value = "itemImage", required = false) MultipartFile itemImage,
-                                      @RequestParam(value = "dateImage", required = false) MultipartFile dateImage) throws IOException {
-        // Convert itemJson to Item object
-        MedicineModel updatedMedicine = objectMapper.readValue(itemJson, MedicineModel.class);
-
-        // Update the item in the database
-        medicineService.updateMedicine(updatedMedicine, itemImage, dateImage);
-        // Redirect or return view
-        return "redirect:/myrequest";
-    }
-
-    //edit medicine in my request
-    @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
-    @PostMapping("/medical/req/edit")
-    public String requestMedicalEdit(@RequestParam("item") String itemJson,
-                                      @RequestParam(value = "itemImage", required = false) MultipartFile itemImage,
-                                      @RequestParam(value = "dateImage", required = false) MultipartFile dateImage) throws IOException {
-        // Convert itemJson to Item object
-        MedicalModel updatedMedicine = objectMapper.readValue(itemJson, MedicalModel.class);
-
-        // Update the item in the database
-        medicalService.updateMedical(updatedMedicine, itemImage, dateImage);
-        // Redirect or return view
-        return "redirect:/myrequest";
-    }
-
-    //edit medicine in my request
-    @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
-    @PostMapping("/medicine/donate/edit")
-    public String donateMedicineEdit(@RequestParam("item") String itemJson,
-                                      @RequestParam(value = "itemImage", required = false) MultipartFile itemImage,
-                                      @RequestParam(value = "dateImage", required = false) MultipartFile dateImage) throws IOException {
-        // Convert itemJson to Item object
-        MedicineModel updatedMedicine = objectMapper.readValue(itemJson, MedicineModel.class);
-
-        // Update the item in the database
-        medicineService.updateMedicine(updatedMedicine, itemImage, dateImage);
-        // Redirect or return view
-        return "redirect:/mydonation";
-    }
-
-    //edit medicine in my request
-    @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
-    @PostMapping("/medical/donate/edit")
-    public String donateMedicalEdit(@RequestParam("item") String itemJson,
-                                     @RequestParam(value = "itemImage", required = false) MultipartFile itemImage,
-                                     @RequestParam(value = "dateImage", required = false) MultipartFile dateImage) throws IOException {
-        // Convert itemJson to Item object
-        MedicalModel updatedMedicine = objectMapper.readValue(itemJson, MedicalModel.class);
-
-        // Update the item in the database
-        medicalService.updateMedical(updatedMedicine, itemImage, dateImage);
-        // Redirect or return view
-        return "redirect:/mydonation";
-    }
-
     //delete medicine in my donation
     @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
     @PostMapping("/{id}/medicineRemove")
@@ -352,7 +294,7 @@ public class HomeController {
     @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
     @PostMapping("/{id}/reqMedicineRemove")
     public String reqMedicineRemove(@PathVariable Long id){
-        medicineService.removeMedicine(id);
+        medicineService.removeRequestingMedicine(id);
         return "redirect:/myrequest";
     }
 
@@ -360,7 +302,7 @@ public class HomeController {
     @PreAuthorize("hasAnyAuthority('MEMBER', 'PHARMACIST')")
     @PostMapping("/{id}/reqMedicalRemove")
     public String reqMedicalRemove(@PathVariable Long id){
-        medicalService.removeMedicalById(id);
+        medicalService.removeRequestingMedical(id);
         return "redirect:/myrequest";
     }
 

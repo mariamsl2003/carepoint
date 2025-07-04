@@ -72,7 +72,9 @@ public class AdminController {
     //if the admin click accept
     @PostMapping("/{id}/accept")
     public String acceptMember(@PathVariable Long id, Model model){
+        List<MemberModel> members = memberService.getPendingMember();
         memberService.updateRole(id);
+        model.addAttribute("members", members);
         model.addAttribute("successfulMessage", "Accepted Volunteer");
         return "redirect:/admin/volunteer";
     }

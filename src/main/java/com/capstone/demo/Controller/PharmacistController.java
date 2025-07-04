@@ -63,13 +63,15 @@ public class PharmacistController {
 
     //edit profile
     @PostMapping("/profile/edit")
-    public String editProfile(@RequestParam("id") Long id,
-                              @RequestParam("email") String email,
+    public String editProfile(@RequestParam("email") String email,
                               @RequestParam("phoneNumber") Long phoneNumber,
                               @RequestParam("password") String password,
-                              @RequestParam("address") String address){
+                              @RequestParam("address") String address,
+                              Model model){
+        Long id = retrieving();
         memberService.updateMember(id, email, phoneNumber, password, address);
-        return "redirect:/profile";
+        model.addAttribute("successMessage", "profile Updated");
+        return "redirect:/pharmacist/profile";
     }
 
     //accept medicine donation

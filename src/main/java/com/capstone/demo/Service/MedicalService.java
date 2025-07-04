@@ -71,6 +71,14 @@ public class MedicalService {
         return medical;
     }
 
+    //remove requested medical
+    public void removeRequestingMedical(Long id){
+        MedicalModel medical = medicalRepository.findByMedicalId(id);
+        medical.setRequested(null);
+        medical.setRequester(null);
+        medicalRepository.save(medical);
+    }
+
     //request form handling
     public void requesting(Long id, Long quantity, MultipartFile prescript, MemberModel requester) throws IOException {
         MedicalModel medical = medicalRepository.findByMedicalId(id);
@@ -124,6 +132,8 @@ public class MedicalService {
 
     //delete from medical
     public void removeMedicalById(Long id){
+        MedicalModel medical = medicalRepository.findByMedicalId(id);
+        medical.setRequester(null);
         medicalRepository.removeById(id);
     }
 

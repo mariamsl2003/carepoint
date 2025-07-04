@@ -102,22 +102,24 @@
                     <li class="nav-item"><a class="nav-link" th:href="@{/request}">Request</a></li>
                     <li class="nav-item"><a class="nav-link" th:href="@{/volunteering}">Join Us</a></li>
                 </ul>
-                <div th:if="${member != null}">
-                    <div th:if="${member.role != null and member.role == T(com.capstone.demo.Enum.Roles).MEMBER}" class="d-flex align-items-center">
-                        <a th:href="@{/profile}" class="btn btn-outline-primary me-2">
-                            <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="profile" style="width: 30px; height: 30px; border-radius: 50%;">
+                <div th:if="${member != null}" class="d-flex align-items-center gap-2">
+                    <div th:if="${member.role != null and member.role == T(com.capstone.demo.Enum.Roles).MEMBER}">
+                        <a th:href="@{/profile}" class="btn btn-outline-primary">
+                            <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="profile"
+                                 style="width: 30px; height: 30px; border-radius: 50%;">
                         </a>
                     </div>
-                    <div th:if="${member.role != null and member.role == T(com.capstone.demo.Enum.Roles).PHARMACIST}" class="d-flex align-items-center">
-                        <a th:href="@{/pharmacist/profile}" class="btn btn-outline-primary me-2">
-                            <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="profile" style="width: 30px; height: 30px; border-radius: 50%;">
+                    <div th:if="${member.role != null and member.role == T(com.capstone.demo.Enum.Roles).PHARMACIST}">
+                        <a th:href="@{/pharmacist/profile}" class="btn btn-outline-primary">
+                            <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="profile"
+                                 style="width: 30px; height: 30px; border-radius: 50%;">
                         </a>
                     </div>
                     <a th:href="@{/logout}" class="btn btn-danger">Logout</a>
-
                 </div>
-                <div th:if="${member == null}">
-                    <a th:href="@{/users/login}" class="btn btn-outline-primary me-2">Login</a>
+
+                <div th:if="${member == null}" class="d-flex align-items-center gap-2">
+                    <a th:href="@{/users/login}" class="btn btn-outline-primary">Login</a>
                     <a th:href="@{/users/signup}" class="btn btn-primary">Register</a>
                 </div>
             </div>

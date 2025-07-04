@@ -48,7 +48,10 @@ public class SecurityConfig {
                                     "/users/signup", "/users/signing", "/users/login", "/users/pass").permitAll()
                                     .requestMatchers("/profile", "/profile/edit", "/volunteering",
                                             "/volunteer", "/donation" , "/new-donation", "/myrequest", "/mydonation",
-                                            "/request", "/request/form").authenticated()
+                                            "/request", "/request/form", "/profile/edit", "/medicine/req/edit",
+                                            "/medical/req/edit", "/medicine/donate/edit", "/medical/donate/edit",
+                                            "/{id}/medicineRemove", "/{id}/medicalRemove",
+                                            "/{id}/reqMedicineRemove", "/{id}/reqMedicalRemove").authenticated()
                                     .requestMatchers("/pharmacist/profile",
                                             "/pharmacist/medicine/donation/{id}/accept",
                                             "/pharmacist/medicine/donation/{id}/reject",
@@ -57,7 +60,8 @@ public class SecurityConfig {
                                             "/pharmacist/medical/donation/{id}/accept",
                                             "/pharmacist/medical/donation/{id}/reject",
                                             "/pharmacist/medical/request/{id}/accept",
-                                            "/pharmacist/medical/request/{id}/reject").authenticated()
+                                            "/pharmacist/medical/request/{id}/reject",
+                                            "pharmacist/profile/edit").authenticated()
                                     .requestMatchers("/admin/dashboard", "/admin/volunteer",
                                             "/admin/{id}/accept", "/admin/{id}/reject").hasAuthority("ADMIN");
                     // Allow all other requests without authentication

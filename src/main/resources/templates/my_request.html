@@ -7,6 +7,7 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet"/>
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+        <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
         <style>
             body {
               font-family: 'Poppins', sans-serif;
@@ -109,10 +110,10 @@
             toast.show();
        }
 
-       function deleteItem(button) {
+       async function deleteItem(button) {
          const item = button.closest('li');
-         const itemId = item.getAttribute(data-id);
-         const category = item.getAttribute(data-category);
+         const itemId = item.getAttribute('data-id');
+         const category = item.getAttribute('data-category');
 
          const parsedId = Number(itemId);
 
@@ -123,122 +124,20 @@
         }
 
         if(category == 'medicine'){
-            fetch(`/${parsedId}/reqMedicineRemove`, {
+            await fetch(`/${parsedId}/reqMedicineRemove`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             }).catch(err => console.error("Fetch error:", err));
         }
 
         else if(category == 'medical'){
-            fetch(`/${parsedId}/reqMedicalRemove`, {
+            await fetch(`/${parsedId}/reqMedicalRemove`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             }).catch(err => console.error("Fetch error:", err));
         }
 
          showToast(`Item Deleted`);
-       }
-
-       function editItem(button) {
-          // Enable the input fields for editing
-          document.getElementById('name').removeAttribute('readonly');
-          document.getElementById('quantity').removeAttribute('readonly');
-          document.getElementById('description').removeAttribute('readonly');
-          document.getElementById('donor').removeAttribute('readonly');
-
-          // Show image change buttons
-          document.getElementById('changeImageBtn').style.display = 'inline-block';
-          document.getElementById('changeDateImageBtn').style.display = 'inline-block';
-
-          // Store original data for canceling
-          originalData = {
-            name: document.getElementById('name').value,
-            quantity: document.getElementById('quantity').value,
-            description: document.getElementById('description').value,
-            donor: document.getElementById('donor').value,
-            itemImageUrl: document.getElementById('item_image').src,
-            dateImageUrl: document.getElementById('date_image').src
-          };
-
-          // Toggle buttons
-          document.getElementById('editButton').style.display = 'none';
-          document.getElementById('deleteButton').style.display = 'none';
-          document.getElementById('saveButton').style.display = 'inline-block';
-          document.getElementById('cancelButton').style.display = 'inline-block';
-       }
-
-       function saveItem(){
-          const id = document.getElementById('selectedId').value;
-          const category = document.getElementById('category').value;
-          const parsedId = Number(id);
-          const updatedItem = {
-            id: parsedId,
-            name: document.getElementById('name').value,
-            quantity: document.getElementById('quantity').value,
-            description: document.getElementById('description').value,
-            donor: document.getElementById('donor').value
-          };
-
-          const itemImageFile = document.getElementById('imageUpload').files[0];
-          const dateImageFile = document.getElementById('dateImageUpload').files[0];
-
-          const formData = new FormData();
-          formData.append('item', JSON.stringify(updatedItem));
-          if (itemImageFile) formData.append('itemImage', itemImageFile);
-          if (dateImageFile) formData.append('dateImage', dateImageFile);
-
-
-
-          // Call the controller method to save the updated item
-          if(category == 'medicine'){
-            fetch(`/medicine/req/edit`, { //change the url
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: formData
-            });
-          }
-
-          if(category == 'medical'){
-            fetch(`/medical/req/edit`, { //change the url
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: formData
-            });
-          }
-
-          showToast('Item Updated');
-       }
-
-       function  cancelEdit(){
-         // Revert the input fields to their original values
-         document.getElementById('name').value = originalData.name;
-         document.getElementById('quantity').value = originalData.quantity;
-         document.getElementById('description').value = originalData.description;
-         document.getElementById('donor').value = originalData.donor;
-
-         // Revert images
-         document.getElementById('item_image').src = originalData.itemImageUrl;
-         document.getElementById('date_image').src = originalData.dateImageUrl;
-
-         // Disable the input fields
-         document.getElementById('name').setAttribute('readonly', true);
-         document.getElementById('quantity').setAttribute('readonly', true);
-         document.getElementById('description').setAttribute('readonly', true);
-         document.getElementById('donor').setAttribute('readonly', true);
-
-         // Hide image change buttons
-         document.getElementById('changeImageBtn').style.display = 'none';
-         document.getElementById('changeDateImageBtn').style.display = 'none';
-
-         // Toggle buttons
-         document.getElementById('editButton').style.display = 'inline-block';
-         document.getElementById('deleteButton').style.display = 'inline-block';
-         document.getElementById('saveButton').style.display = 'none';
-         document.getElementById('cancelButton').style.display = 'none';
        }
 
        function toggleSidebar() {
@@ -348,20 +247,30 @@
                            th:data-name = ${medicine.name} th:data-quantity="${medicine.quantity}"
                            th:data-donor="${medicine.donor.username}" th:data-item="${medicine.item_image}"
                            th:data-date="${medicine.date_image}" th:data-description="${medicine.description}">
-                           <span th:Value="${medicine.name}">Blood Pressure Monitor</span>
+                           <span th:text="${medicine.name}">Blood Pressure Monitor</span>
                            <div class="d-flex align-items-center">
-                               <span class="badge bg-warning text-dark me-2" th:text="${requested}">Pending</span>
-                               <button type="button" class="btn btn-outline-warning btn-sm me-1" th:onclick="getSelectId(this)"><i class="bi bi-pencil-fill"></i></button>
+                               <span class="badge bg-warning text-dark me-2" th:text="${medicine.requested}">Pending</span>
+                               <div th:if="${medicine.requested != T(com.capstone.demo.Enum.RequestToGet).REQUESTED}">
+                                   <button type="button" class="btn btn-outline-warning btn-sm me-1" th:onclick="getSelectId(this)">
+                                       <i class="bi bi-journal-medical"></i>
+                                   </button>
+                               </div>
+
                            </div>
                        </li>
                        <li class="list-group-item" th:each="medical : ${medicals}" data-category="medical" th:data-id="${medical.id}"
                            th:data-name = ${medical.name} th:data-quantity="${medical.quantity}"
                            th:data-donor="${medical.donor.username}" th:data-item="${medical.item_image}"
                            th:data-date="${medical.date_image}" th:data-description="${medical.description}">
-                           <span th:value="${medical.name}">Diabetes Strips</span>
+                           <span th:text="${medical.name}">Blood Pressure Monitor</span>
                            <div class="d-flex align-items-center">
-                               <span class="badge bg-success text-white me-2" th:text="${medical.requested}">Fulfilled</span>
-                               <button type="button" class="btn btn-outline-warning btn-sm me-1" th:onclick="getSelectId(this)"><i class="bi bi-pencil-fill"></i></button>
+                               <span class="badge bg-warning text-dark me-2" th:text="${medical.requested}">Pending</span>
+                               <div th:if="${medical.requested != T(com.capstone.demo.Enum.RequestToGet).REQUESTED}">
+                                   <button type="button" class="btn btn-outline-warning btn-sm me-1" th:onclick="getSelectId(this)">
+                                       <i class="bi bi-journal-medical"></i>
+                                   </button>
+                               </div>
+
                            </div>
                        </li>
            </ul>
@@ -383,9 +292,6 @@
                    </div>
                    <div class="mb-3">
                        <img class="form-control" id="item_image" style="max-width:200px; max-height:200px;" />
-                       <input type="file" id="imageUpload" style="display:none;" accept="image/*">
-                       <button type="button" class="btn btn-sm btn-secondary mt-2" id="changeImageBtn" style="display:none;"
-                               onclick="document.getElementById('imageUpload').click()">Change Image</button>
                    </div>
                    <div class="mb-3">
                        <label for="name" class="form-label">Name</label>
@@ -405,16 +311,10 @@
                    </div>
                    <div class="mb-3">
                        <img class="form-control" id="date_image" style="max-width:200px; max-height:200px;" />
-                       <input type="file" id="dateImageUpload" style="display:none;" accept="image/*">
-                       <button type="button" class="btn btn-sm btn-secondary mt-2" id="changeDateImageBtn" style="display:none;"
-                               onclick="document.getElementById('dateImageUpload').click()">Change Image</button>
                    </div>
 
                    <div class="modal-footer">
-                       <button class="btn btn-outline-warning btn-sm me-1" onclick="editItem(this)" id="editButton"><i class="bi bi-pencil-fill"></i></button>
                        <button class="btn btn-outline-danger btn-sm" onclick="deleteItem(this)" id="deleteButton"><i class="bi bi-trash-fill"></i></button>
-                       <button type="button" class="btn btn-outline-success btn-sm" id="saveButton" style="display: none;" onclick="saveItem()">Save</button>
-                       <button type="button" class="btn btn-outline-secondary btn-sm" id="cancelButton" style="display: none;" onclick="cancelEdit()">Cancel</button>
                    </div>
                </div>
            </form>

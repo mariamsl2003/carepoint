@@ -105,9 +105,19 @@ public class MedicineService {
         return medicineRepository.myRequesting(id);
     }
 
-    //remove medicine
+    //remove donated medicine
     public void removeMedicine(Long id){
+        MedicineModel medicine = medicineRepository.findById(id);
+        medicine.setRequester(null);
         medicineRepository.removeById(id);
+    }
+
+    //remove requested medicine
+    public void removeRequestingMedicine(Long id){
+        MedicineModel medicine = medicineRepository.findById(id);
+        medicine.setRequested(null);
+        medicine.setRequester(null);
+        medicineRepository.save(medicine);
     }
 
     //get all the donation of a member

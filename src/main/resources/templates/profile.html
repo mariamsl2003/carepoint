@@ -114,7 +114,7 @@
                 const bootstrapModal = new bootstrap.Modal(modal);
                 bootstrapModal.show();
             }
-}
+    }
 
     function showToast(message) {
       document.getElementById('toastText').textContent = message;
@@ -160,8 +160,13 @@
             <img src="https://bootdey.com/img/Content/avatar/avatar7.png" class="profile-img mb-3" alt="Member">
             <h5 class="fw-bold" th:text="${member.username}">Ali Hammoud</h5>
             <p class="text-muted mb-1">Member | <span th:text="${member.address}">Beirut, Lebanon</span> </p>
-            <p class="text-muted" th:text="${member.email}"><i class="bi bi-envelope-fill me-2"></i>ali@example.com</p>
-            <button type="button" th:onclick="getSelectId(this)">Edit</button>
+            <p class="text-muted d-flex align-items-center justify-content-center">
+                <i class="bi bi-envelope-fill me-2"></i>
+                <span th:text="${member.email}">ali@example.com</span>
+                <button type="button" class="btn btn-sm btn-link p-0 ms-2" onclick="getSelectId(this)" title="Edit">
+                    <i class="bi bi-pencil"></i>
+                    </button>
+            </p>
         </div>
 
         <div class="card p-4 mb-4">
